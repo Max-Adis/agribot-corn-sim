@@ -12,15 +12,25 @@ def run_robot():
         robot.getDevice('rl_motor'),
         robot.getDevice('rr_motor'),
     ]
+    live_motors = []
     for motor in motors:
+        if motor is None:
+            print("Moteur de roue introuvable.", flush=True)
+            continue
         motor.setPosition(float('inf'))
         motor.setVelocity(0.0)
+        live_motors.append(motor)
 
+    # Seule caméra activée : front_camera. Aucune caméra de pince.
     camera = robot.getDevice('front_camera')
-    camera.enable(time_step * 2)
+    if camera is None:
+        print("front_camera introuvable.", flush=True)
+    else:
+        camera.enable(time_step * 2)
 
     lidar = robot.getDevice('rplidar')
-    lidar.enable(time_step * 2)
+    if lidar is not None:
+        lidar.enable(time_step * 2)
 
     print("Agribot démarré dans le champ de maïs !", flush=True)
 
@@ -28,7 +38,7 @@ def run_robot():
     speed = 4.8
 
     while robot.step(time_step) != -1:
-        for motor in motors:
+        for motor in live_motors:
             motor.setVelocity(speed)
 
 

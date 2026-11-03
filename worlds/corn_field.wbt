@@ -417,7 +417,7 @@ WeedClump { translation 4.460 3.250 0 rotation 0 0 1 2.400 name "weed_68" }
 WeedClump { translation 6.020 3.100 0 rotation 0 0 1 2.800 name "weed_69" }
 
 Agribot {
-  translation -5.5 0.425 0.002
+  translation -5.5 0.425 0
   rotation 0 0 1 0
 }
 

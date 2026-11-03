@@ -32,11 +32,15 @@ PROTO Agribot [
           }
         ]
       }
-      # En ENU, la caméra Webots regarde déjà vers +X (le long de l'allée), haut +Z.
+      # R2025a ENU : l'image suit le +X local, le +Z local est le haut de l'image.
+      # Rotation nulle : regard vers +X (l'allée), horizon horizontal.
+      # 0 1 0 1.5708 enverrait ce +X vers le bas, sur la pince.
+      # Pas d'autre Camera : la fenêtre robot n'a que front_camera.
       Camera {
         translation 0.408 0 0.420
         rotation 0 0 1 0
         name "front_camera"
+        description "Caméra avant"
         fieldOfView 1.047
         width 640
         height 480
@@ -61,12 +65,15 @@ PROTO Agribot [
         jointParameters HingeJointParameters {
           axis 0 1 0
           anchor 0.30 0.24 0.0825
+          dampingConstant 0.06
+          staticFriction 0.02
         }
         device [
           RotationalMotor {
             name "fl_motor"
             maxVelocity 18
             maxTorque 12
+            acceleration 48.5
             sound ""
           }
         ]
@@ -109,12 +116,15 @@ PROTO Agribot [
         jointParameters HingeJointParameters {
           axis 0 1 0
           anchor 0.30 -0.24 0.0825
+          dampingConstant 0.06
+          staticFriction 0.02
         }
         device [
           RotationalMotor {
             name "fr_motor"
             maxVelocity 18
             maxTorque 12
+            acceleration 48.5
             sound ""
           }
         ]
@@ -157,12 +167,15 @@ PROTO Agribot [
         jointParameters HingeJointParameters {
           axis 0 1 0
           anchor -0.30 0.24 0.0825
+          dampingConstant 0.06
+          staticFriction 0.02
         }
         device [
           RotationalMotor {
             name "rl_motor"
             maxVelocity 18
             maxTorque 12
+            acceleration 48.5
             sound ""
           }
         ]
@@ -205,12 +218,15 @@ PROTO Agribot [
         jointParameters HingeJointParameters {
           axis 0 1 0
           anchor -0.30 -0.24 0.0825
+          dampingConstant 0.06
+          staticFriction 0.02
         }
         device [
           RotationalMotor {
             name "rr_motor"
             maxVelocity 18
             maxTorque 12
+            acceleration 48.5
             sound ""
           }
         ]
