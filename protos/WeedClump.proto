@@ -4,7 +4,7 @@
 PROTO WeedClump [
   field SFVec3f    translation 0 0 0
   field SFRotation rotation    0 0 1 0
-  field SFString   name        "weed"
+  field SFString   name        "weed_clump"
 ]
 {
   Solid {
@@ -17,7 +17,7 @@ PROTO WeedClump [
         children [
           Shape {
             appearance PBRAppearance {
-              baseColor 0.55 0.72 0.16
+              baseColor 0.78 0.62 0.08
               roughness 0.8
             }
             geometry Cone {
@@ -33,7 +33,7 @@ PROTO WeedClump [
         children [
           Shape {
             appearance PBRAppearance {
-              baseColor 0.40 0.62 0.13
+              baseColor 0.62 0.48 0.08
               roughness 0.85
             }
             geometry Sphere {
@@ -48,7 +48,7 @@ PROTO WeedClump [
         children [
           Shape {
             appearance PBRAppearance {
-              baseColor 0.48 0.66 0.14
+              baseColor 0.70 0.55 0.10
               roughness 0.85
             }
             geometry Sphere {

@@ -30,9 +30,12 @@ WorldInfo {
 
 Viewpoint {
   fieldOfView 0.95
-  orientation -0.073616 0.440807 0.894578 0.369119
-  position -9.200 -3.600 2.600
-  description "Allée du maïs"
+  orientation 0 1 0 0.50
+  position -7.900 0.425 1.700
+  description "Derrière l'agribot"
+  follow "agribot"
+  followType "Mounted Shot"
+  followSmoothness 0
   near 0.1
   far 80
 }
@@ -345,76 +348,76 @@ CornPlant { translation 5.400 2.550 0 rotation 0 0 1 0.450 name "corn_6_20" }
 CornPlant { translation 6.000 2.550 0 rotation 0 0 1 0.720 name "corn_6_21" }
 CornPlant { translation 6.600 2.550 0 rotation 0 0 1 0.990 name "corn_6_22" }
 
-WeedClump { translation -6.340 -2.225 0 rotation 0 0 1 0.000 name "weed_0" }
-WeedClump { translation -4.780 -2.125 0 rotation 0 0 1 0.400 name "weed_1" }
-WeedClump { translation -3.570 -2.025 0 rotation 0 0 1 0.800 name "weed_2" }
-WeedClump { translation -2.010 -2.175 0 rotation 0 0 1 1.200 name "weed_3" }
-WeedClump { translation -0.800 -2.075 0 rotation 0 0 1 1.600 name "weed_4" }
-WeedClump { translation 0.410 -2.225 0 rotation 0 0 1 2.000 name "weed_5" }
-WeedClump { translation 1.970 -2.125 0 rotation 0 0 1 2.400 name "weed_6" }
-WeedClump { translation 3.180 -2.025 0 rotation 0 0 1 2.800 name "weed_7" }
-WeedClump { translation 4.740 -2.175 0 rotation 0 0 1 0.000 name "weed_8" }
-WeedClump { translation 5.950 -2.075 0 rotation 0 0 1 0.400 name "weed_9" }
-WeedClump { translation -6.270 -1.225 0 rotation 0 0 1 0.400 name "weed_10" }
-WeedClump { translation -4.710 -1.375 0 rotation 0 0 1 0.800 name "weed_11" }
-WeedClump { translation -3.500 -1.275 0 rotation 0 0 1 1.200 name "weed_12" }
-WeedClump { translation -2.290 -1.175 0 rotation 0 0 1 1.600 name "weed_13" }
-WeedClump { translation -0.730 -1.325 0 rotation 0 0 1 2.000 name "weed_14" }
-WeedClump { translation 0.480 -1.225 0 rotation 0 0 1 2.400 name "weed_15" }
-WeedClump { translation 2.040 -1.375 0 rotation 0 0 1 2.800 name "weed_16" }
-WeedClump { translation 3.250 -1.275 0 rotation 0 0 1 0.000 name "weed_17" }
-WeedClump { translation 4.460 -1.175 0 rotation 0 0 1 0.400 name "weed_18" }
-WeedClump { translation 6.020 -1.325 0 rotation 0 0 1 0.800 name "weed_19" }
-WeedClump { translation -6.200 -0.475 0 rotation 0 0 1 0.800 name "weed_20" }
-WeedClump { translation -4.990 -0.375 0 rotation 0 0 1 1.200 name "weed_21" }
-WeedClump { translation -3.430 -0.525 0 rotation 0 0 1 1.600 name "weed_22" }
-WeedClump { translation -2.220 -0.425 0 rotation 0 0 1 2.000 name "weed_23" }
-WeedClump { translation -0.660 -0.325 0 rotation 0 0 1 2.400 name "weed_24" }
-WeedClump { translation 0.550 -0.475 0 rotation 0 0 1 2.800 name "weed_25" }
-WeedClump { translation 1.760 -0.375 0 rotation 0 0 1 0.000 name "weed_26" }
-WeedClump { translation 3.320 -0.525 0 rotation 0 0 1 0.400 name "weed_27" }
-WeedClump { translation 4.530 -0.425 0 rotation 0 0 1 0.800 name "weed_28" }
-WeedClump { translation 6.090 -0.325 0 rotation 0 0 1 1.200 name "weed_29" }
-WeedClump { translation -6.130 1.375 0 rotation 0 0 1 1.200 name "weed_30" }
-WeedClump { translation -4.920 1.225 0 rotation 0 0 1 1.600 name "weed_31" }
-WeedClump { translation -3.360 1.325 0 rotation 0 0 1 2.000 name "weed_32" }
-WeedClump { translation -2.150 1.175 0 rotation 0 0 1 2.400 name "weed_33" }
-WeedClump { translation -0.940 1.275 0 rotation 0 0 1 2.800 name "weed_34" }
-WeedClump { translation 0.620 1.375 0 rotation 0 0 1 0.000 name "weed_35" }
-WeedClump { translation 1.830 1.225 0 rotation 0 0 1 0.400 name "weed_36" }
-WeedClump { translation 3.390 1.325 0 rotation 0 0 1 0.800 name "weed_37" }
-WeedClump { translation 4.600 1.175 0 rotation 0 0 1 1.200 name "weed_38" }
-WeedClump { translation 5.810 1.275 0 rotation 0 0 1 1.600 name "weed_39" }
-WeedClump { translation -6.060 2.125 0 rotation 0 0 1 1.600 name "weed_40" }
-WeedClump { translation -4.850 2.225 0 rotation 0 0 1 2.000 name "weed_41" }
-WeedClump { translation -3.640 2.075 0 rotation 0 0 1 2.400 name "weed_42" }
-WeedClump { translation -2.080 2.175 0 rotation 0 0 1 2.800 name "weed_43" }
-WeedClump { translation -0.870 2.025 0 rotation 0 0 1 0.000 name "weed_44" }
-WeedClump { translation 0.690 2.125 0 rotation 0 0 1 0.400 name "weed_45" }
-WeedClump { translation 1.900 2.225 0 rotation 0 0 1 0.800 name "weed_46" }
-WeedClump { translation 3.110 2.075 0 rotation 0 0 1 1.200 name "weed_47" }
-WeedClump { translation 4.670 2.175 0 rotation 0 0 1 1.600 name "weed_48" }
-WeedClump { translation 5.880 2.025 0 rotation 0 0 1 2.000 name "weed_49" }
-WeedClump { translation -6.340 -3.250 0 rotation 0 0 1 2.000 name "weed_50" }
-WeedClump { translation -4.780 -3.150 0 rotation 0 0 1 2.400 name "weed_51" }
-WeedClump { translation -3.570 -3.050 0 rotation 0 0 1 2.800 name "weed_52" }
-WeedClump { translation -2.010 -3.200 0 rotation 0 0 1 0.000 name "weed_53" }
-WeedClump { translation -0.800 -3.100 0 rotation 0 0 1 0.400 name "weed_54" }
-WeedClump { translation 0.410 -3.250 0 rotation 0 0 1 0.800 name "weed_55" }
-WeedClump { translation 1.970 -3.150 0 rotation 0 0 1 1.200 name "weed_56" }
-WeedClump { translation 3.180 -3.050 0 rotation 0 0 1 1.600 name "weed_57" }
-WeedClump { translation 4.740 -3.200 0 rotation 0 0 1 2.000 name "weed_58" }
-WeedClump { translation 5.950 -3.100 0 rotation 0 0 1 2.400 name "weed_59" }
-WeedClump { translation -6.270 3.200 0 rotation 0 0 1 2.400 name "weed_60" }
-WeedClump { translation -4.710 3.050 0 rotation 0 0 1 2.800 name "weed_61" }
-WeedClump { translation -3.500 3.150 0 rotation 0 0 1 0.000 name "weed_62" }
-WeedClump { translation -2.290 3.250 0 rotation 0 0 1 0.400 name "weed_63" }
-WeedClump { translation -0.730 3.100 0 rotation 0 0 1 0.800 name "weed_64" }
-WeedClump { translation 0.480 3.200 0 rotation 0 0 1 1.200 name "weed_65" }
-WeedClump { translation 2.040 3.050 0 rotation 0 0 1 1.600 name "weed_66" }
-WeedClump { translation 3.250 3.150 0 rotation 0 0 1 2.000 name "weed_67" }
-WeedClump { translation 4.460 3.250 0 rotation 0 0 1 2.400 name "weed_68" }
-WeedClump { translation 6.020 3.100 0 rotation 0 0 1 2.800 name "weed_69" }
+WeedClump { translation -5.620 -2.550 0 rotation 0 0 1 0.000 name "weed_0" }
+WeedClump { translation -4.580 -2.550 0 rotation 0 0 1 0.350 name "weed_1" }
+WeedClump { translation -3.220 -2.550 0 rotation 0 0 1 0.700 name "weed_2" }
+WeedClump { translation -2.180 -2.550 0 rotation 0 0 1 1.050 name "weed_3" }
+WeedClump { translation -0.820 -2.550 0 rotation 0 0 1 1.400 name "weed_4" }
+WeedClump { translation 0.220 -2.550 0 rotation 0 0 1 1.750 name "weed_5" }
+WeedClump { translation 1.580 -2.550 0 rotation 0 0 1 2.100 name "weed_6" }
+WeedClump { translation 2.620 -2.550 0 rotation 0 0 1 2.450 name "weed_7" }
+WeedClump { translation 3.980 -2.550 0 rotation 0 0 1 2.800 name "weed_8" }
+WeedClump { translation 5.020 -2.550 0 rotation 0 0 1 0.000 name "weed_9" }
+WeedClump { translation -5.780 -1.700 0 rotation 0 0 1 0.350 name "weed_10" }
+WeedClump { translation -4.420 -1.700 0 rotation 0 0 1 0.700 name "weed_11" }
+WeedClump { translation -3.380 -1.700 0 rotation 0 0 1 1.050 name "weed_12" }
+WeedClump { translation -2.020 -1.700 0 rotation 0 0 1 1.400 name "weed_13" }
+WeedClump { translation -0.980 -1.700 0 rotation 0 0 1 1.750 name "weed_14" }
+WeedClump { translation 0.380 -1.700 0 rotation 0 0 1 2.100 name "weed_15" }
+WeedClump { translation 1.420 -1.700 0 rotation 0 0 1 2.450 name "weed_16" }
+WeedClump { translation 2.780 -1.700 0 rotation 0 0 1 2.800 name "weed_17" }
+WeedClump { translation 3.820 -1.700 0 rotation 0 0 1 0.000 name "weed_18" }
+WeedClump { translation 5.180 -1.700 0 rotation 0 0 1 0.350 name "weed_19" }
+WeedClump { translation -5.620 -0.850 0 rotation 0 0 1 0.700 name "weed_20" }
+WeedClump { translation -4.580 -0.850 0 rotation 0 0 1 1.050 name "weed_21" }
+WeedClump { translation -3.220 -0.850 0 rotation 0 0 1 1.400 name "weed_22" }
+WeedClump { translation -2.180 -0.850 0 rotation 0 0 1 1.750 name "weed_23" }
+WeedClump { translation -0.820 -0.850 0 rotation 0 0 1 2.100 name "weed_24" }
+WeedClump { translation 0.220 -0.850 0 rotation 0 0 1 2.450 name "weed_25" }
+WeedClump { translation 1.580 -0.850 0 rotation 0 0 1 2.800 name "weed_26" }
+WeedClump { translation 2.620 -0.850 0 rotation 0 0 1 0.000 name "weed_27" }
+WeedClump { translation 3.980 -0.850 0 rotation 0 0 1 0.350 name "weed_28" }
+WeedClump { translation 5.020 -0.850 0 rotation 0 0 1 0.700 name "weed_29" }
+WeedClump { translation -5.780 0.000 0 rotation 0 0 1 1.050 name "weed_30" }
+WeedClump { translation -4.420 0.000 0 rotation 0 0 1 1.400 name "weed_31" }
+WeedClump { translation -3.380 0.000 0 rotation 0 0 1 1.750 name "weed_32" }
+WeedClump { translation -2.020 0.000 0 rotation 0 0 1 2.100 name "weed_33" }
+WeedClump { translation -0.980 0.000 0 rotation 0 0 1 2.450 name "weed_34" }
+WeedClump { translation 0.380 0.000 0 rotation 0 0 1 2.800 name "weed_35" }
+WeedClump { translation 1.420 0.000 0 rotation 0 0 1 0.000 name "weed_36" }
+WeedClump { translation 2.780 0.000 0 rotation 0 0 1 0.350 name "weed_37" }
+WeedClump { translation 3.820 0.000 0 rotation 0 0 1 0.700 name "weed_38" }
+WeedClump { translation 5.180 0.000 0 rotation 0 0 1 1.050 name "weed_39" }
+WeedClump { translation -5.620 0.850 0 rotation 0 0 1 1.400 name "weed_40" }
+WeedClump { translation -4.580 0.850 0 rotation 0 0 1 1.750 name "weed_41" }
+WeedClump { translation -3.220 0.850 0 rotation 0 0 1 2.100 name "weed_42" }
+WeedClump { translation -2.180 0.850 0 rotation 0 0 1 2.450 name "weed_43" }
+WeedClump { translation -0.820 0.850 0 rotation 0 0 1 2.800 name "weed_44" }
+WeedClump { translation 0.220 0.850 0 rotation 0 0 1 0.000 name "weed_45" }
+WeedClump { translation 1.580 0.850 0 rotation 0 0 1 0.350 name "weed_46" }
+WeedClump { translation 2.620 0.850 0 rotation 0 0 1 0.700 name "weed_47" }
+WeedClump { translation 3.980 0.850 0 rotation 0 0 1 1.050 name "weed_48" }
+WeedClump { translation 5.020 0.850 0 rotation 0 0 1 1.400 name "weed_49" }
+WeedClump { translation -5.780 1.700 0 rotation 0 0 1 1.750 name "weed_50" }
+WeedClump { translation -4.420 1.700 0 rotation 0 0 1 2.100 name "weed_51" }
+WeedClump { translation -3.380 1.700 0 rotation 0 0 1 2.450 name "weed_52" }
+WeedClump { translation -2.020 1.700 0 rotation 0 0 1 2.800 name "weed_53" }
+WeedClump { translation -0.980 1.700 0 rotation 0 0 1 0.000 name "weed_54" }
+WeedClump { translation 0.380 1.700 0 rotation 0 0 1 0.350 name "weed_55" }
+WeedClump { translation 1.420 1.700 0 rotation 0 0 1 0.700 name "weed_56" }
+WeedClump { translation 2.780 1.700 0 rotation 0 0 1 1.050 name "weed_57" }
+WeedClump { translation 3.820 1.700 0 rotation 0 0 1 1.400 name "weed_58" }
+WeedClump { translation 5.180 1.700 0 rotation 0 0 1 1.750 name "weed_59" }
+WeedClump { translation -5.620 2.550 0 rotation 0 0 1 2.100 name "weed_60" }
+WeedClump { translation -4.580 2.550 0 rotation 0 0 1 2.450 name "weed_61" }
+WeedClump { translation -3.220 2.550 0 rotation 0 0 1 2.800 name "weed_62" }
+WeedClump { translation -2.180 2.550 0 rotation 0 0 1 0.000 name "weed_63" }
+WeedClump { translation -0.820 2.550 0 rotation 0 0 1 0.350 name "weed_64" }
+WeedClump { translation 0.220 2.550 0 rotation 0 0 1 0.700 name "weed_65" }
+WeedClump { translation 1.580 2.550 0 rotation 0 0 1 1.050 name "weed_66" }
+WeedClump { translation 2.620 2.550 0 rotation 0 0 1 1.400 name "weed_67" }
+WeedClump { translation 3.980 2.550 0 rotation 0 0 1 1.750 name "weed_68" }
+WeedClump { translation 5.020 2.550 0 rotation 0 0 1 2.100 name "weed_69" }
 
 Agribot {
   translation -5.5 0.425 0
