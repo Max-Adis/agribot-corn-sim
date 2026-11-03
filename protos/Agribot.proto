@@ -1,5 +1,7 @@
 #VRML_SIM R2025a utf8
-# Model: Agribot v7 for Agricultural Simulation
+# Agribot v7. Cotes du xacro Gazebo (maillage FreeCAD en mm, échelle 0.001).
+# Voie 0,48 m, empattement 0,60 m, rayon de roue 0,0825 m.
+# Le cylindre Webots est aligné sur Z : la collision de roue est tournée sur Y.
 
 PROTO Agribot [
   field SFVec3f    translation 0 0 0
@@ -14,122 +16,258 @@ PROTO Agribot [
     name IS name
     controller IS controller
     children [
-      # Châssis principal
+      # Maillage CAO : x -0,462..0,420  y ±0,231  z 0,058..0,500 m
       Transform {
-        translation -0.018 0 0.255
+        scale 0.001 0.001 0.001
         children [
           Shape {
             appearance PBRAppearance {
               baseColor 0.16 0.34 0.60
-              roughness 0.4
-              metalness 0.2
+              roughness 0.45
+              metalness 0.25
             }
-            geometry Box {
-              size 0.84 0.43 0.29
+            geometry Mesh {
+              url [ "../meshes/robot_static.stl" ]
             }
           }
         ]
       }
-      # Caméra frontale : regarde vers +X (le long de l'allée)
+      # En ENU, la caméra Webots regarde déjà vers +X (le long de l'allée), haut +Z.
       Camera {
         translation 0.408 0 0.420
-        rotation 0 1 0 1.5708
+        rotation 0 0 1 0
         name "front_camera"
         fieldOfView 1.047
         width 640
         height 480
+        near 0.05
+        far 30
       }
-      # LiDAR 360° horizontal (le balayage natif tourne autour de Y)
+      # Balayage tournant autour de Y local. -90° sur X aligne cet axe sur -Z (plan horizontal, 360°).
       Lidar {
         translation 0.342 0 0.472
-        rotation 1 0 0 -1.5708
+        rotation 1 0 0 -1.5707963
         name "rplidar"
-        horizontalResolution 512
-        fieldOfView 3.1416
-        verticalFieldOfView 0.2
+        horizontalResolution 720
+        fieldOfView 6.28318
+        verticalFieldOfView 0.02
         numberOfLayers 1
         minRange 0.15
-        maxRange 12.0
+        maxRange 12
         type "rotating"
+        defaultFrequency 10
       }
-      # Roue avant gauche (cylindre Webots aligné sur Y, axe de roulis)
       HingeJoint {
-        jointParameters HingeJointParameters { axis 0 1 0 anchor 0.30 0.24 0.0825 }
-        device [ RotationalMotor { name "fl_motor" maxVelocity 18 maxTorque 12 } ]
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor 0.30 0.24 0.0825
+        }
+        device [
+          RotationalMotor {
+            name "fl_motor"
+            maxVelocity 18
+            maxTorque 12
+            sound ""
+          }
+        ]
         endPoint Solid {
           translation 0.30 0.24 0.0825
           name "fl_wheel"
+          contactMaterial "tire"
           children [
-            Shape {
-              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
-              geometry Cylinder { height 0.032 radius 0.0825 }
+            Transform {
+              scale 0.001 0.001 0.001
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.20 0.45 0.19
+                    roughness 0.85
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/front_left_wheel.stl" ]
+                  }
+                }
+              ]
             }
           ]
-          boundingObject Cylinder { height 0.032 radius 0.0825 }
-          physics Physics { mass 0.65 }
+          boundingObject Transform {
+            rotation 1 0 0 1.5707963
+            children [
+              Cylinder {
+                height 0.032
+                radius 0.0825
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.65
+          }
         }
       }
-      # Roue avant droite
       HingeJoint {
-        jointParameters HingeJointParameters { axis 0 1 0 anchor 0.30 -0.24 0.0825 }
-        device [ RotationalMotor { name "fr_motor" maxVelocity 18 maxTorque 12 } ]
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor 0.30 -0.24 0.0825
+        }
+        device [
+          RotationalMotor {
+            name "fr_motor"
+            maxVelocity 18
+            maxTorque 12
+            sound ""
+          }
+        ]
         endPoint Solid {
           translation 0.30 -0.24 0.0825
           name "fr_wheel"
+          contactMaterial "tire"
           children [
-            Shape {
-              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
-              geometry Cylinder { height 0.032 radius 0.0825 }
+            Transform {
+              scale 0.001 0.001 0.001
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.20 0.45 0.19
+                    roughness 0.85
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/front_right_wheel.stl" ]
+                  }
+                }
+              ]
             }
           ]
-          boundingObject Cylinder { height 0.032 radius 0.0825 }
-          physics Physics { mass 0.65 }
+          boundingObject Transform {
+            rotation 1 0 0 1.5707963
+            children [
+              Cylinder {
+                height 0.032
+                radius 0.0825
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.65
+          }
         }
       }
-      # Roue arrière gauche
       HingeJoint {
-        jointParameters HingeJointParameters { axis 0 1 0 anchor -0.30 0.24 0.0825 }
-        device [ RotationalMotor { name "rl_motor" maxVelocity 18 maxTorque 12 } ]
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor -0.30 0.24 0.0825
+        }
+        device [
+          RotationalMotor {
+            name "rl_motor"
+            maxVelocity 18
+            maxTorque 12
+            sound ""
+          }
+        ]
         endPoint Solid {
           translation -0.30 0.24 0.0825
           name "rl_wheel"
+          contactMaterial "tire"
           children [
-            Shape {
-              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
-              geometry Cylinder { height 0.032 radius 0.0825 }
+            Transform {
+              scale 0.001 0.001 0.001
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.20 0.45 0.19
+                    roughness 0.85
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/rear_left_wheel.stl" ]
+                  }
+                }
+              ]
             }
           ]
-          boundingObject Cylinder { height 0.032 radius 0.0825 }
-          physics Physics { mass 0.65 }
+          boundingObject Transform {
+            rotation 1 0 0 1.5707963
+            children [
+              Cylinder {
+                height 0.032
+                radius 0.0825
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.65
+          }
         }
       }
-      # Roue arrière droite
       HingeJoint {
-        jointParameters HingeJointParameters { axis 0 1 0 anchor -0.30 -0.24 0.0825 }
-        device [ RotationalMotor { name "rr_motor" maxVelocity 18 maxTorque 12 } ]
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor -0.30 -0.24 0.0825
+        }
+        device [
+          RotationalMotor {
+            name "rr_motor"
+            maxVelocity 18
+            maxTorque 12
+            sound ""
+          }
+        ]
         endPoint Solid {
           translation -0.30 -0.24 0.0825
           name "rr_wheel"
+          contactMaterial "tire"
           children [
-            Shape {
-              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
-              geometry Cylinder { height 0.032 radius 0.0825 }
+            Transform {
+              scale 0.001 0.001 0.001
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.20 0.45 0.19
+                    roughness 0.85
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/rear_right_wheel.stl" ]
+                  }
+                }
+              ]
             }
           ]
-          boundingObject Cylinder { height 0.032 radius 0.0825 }
-          physics Physics { mass 0.65 }
+          boundingObject Transform {
+            rotation 1 0 0 1.5707963
+            children [
+              Cylinder {
+                height 0.032
+                radius 0.0825
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.65
+          }
         }
       }
     ]
+    # Boîte de collision du xacro. Bas à z=0,110 : au-dessus des roues (haut z=0,165)
+    # et plus étroite (y ±0,215) que l'intérieur des roues (y ±0,224).
     boundingObject Transform {
       translation -0.018 0 0.255
-      children [ Box { size 0.84 0.43 0.29 } ]
+      children [
+        Box {
+          size 0.84 0.43 0.29
+        }
+      ]
     }
     physics Physics {
       density -1
-      mass 24.0
-      centerOfMass [ 0 0 0.22 ]
-      inertiaMatrix [ 0.85 1.15 1.45, 0 0 0 ]
+      mass 24
+      centerOfMass 0 0 0.22
+      inertiaMatrix [
+        0.85 1.15 1.45
+        0 0 0
+      ]
     }
   }
 }

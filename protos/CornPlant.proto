@@ -1,57 +1,201 @@
 #VRML_SIM R2025a utf8
-# Tige 1.6 m, feuilles arquées, fleur dorée.
+# Maïs d'environ 1,9 m. Le cylindre Webots est selon Z.
+# Seule la tige est un obstacle : l'allée de 0,85 m reste carrossable.
 
 PROTO CornPlant [
   field SFVec3f    translation 0 0 0
   field SFRotation rotation    0 0 1 0
+  field SFString   name        "corn"
 ]
 {
   Solid {
     translation IS translation
     rotation IS rotation
+    name IS name
     children [
-      Transform {
-        translation 0 0 0.8
+      Pose {
+        translation 0 0 0.825
         children [
           Shape {
-            appearance PBRAppearance { baseColor 0.28 0.55 0.15 roughness 0.7 }
-            geometry Cylinder { height 1.6 radius 0.022 }
+            appearance DEF STALK_APP PBRAppearance {
+              baseColor 0.18 0.45 0.11
+              roughness 0.7
+            }
+            geometry Cylinder {
+              height 1.65
+              radius 0.02
+              subdivision 8
+            }
           }
         ]
       }
-      Transform {
-        translation 0.15 0.05 0.65
-        rotation 0.3 0.6 0.2 0.8
+      Pose {
+        translation 0 0 1.785
         children [
           Shape {
-            appearance PBRAppearance { baseColor 0.20 0.48 0.12 roughness 0.6 }
-            geometry Sphere { radius 0.28 }
+            appearance PBRAppearance {
+              baseColor 0.84 0.74 0.28
+              roughness 0.75
+            }
+            geometry Cone {
+              bottomRadius 0.04
+              height 0.27
+              subdivision 7
+            }
           }
         ]
       }
-      Transform {
-        translation -0.15 0.08 1.05
-        rotation -0.4 -0.5 0.3 0.9
+      Pose {
+        translation 0 0 0.55
+        rotation 0 1 0 1.05
         children [
-          Shape {
-            appearance PBRAppearance { baseColor 0.22 0.50 0.14 roughness 0.6 }
-            geometry Sphere { radius 0.30 }
+          Pose {
+            translation 0.24 0 0
+            children [
+              Shape {
+                appearance DEF LEAF_APP PBRAppearance {
+                  baseColor 0.16 0.50 0.12
+                  roughness 0.55
+                }
+                geometry Box {
+                  size 0.48 0.07 0.012
+                }
+              }
+            ]
           }
         ]
       }
-      Transform {
-        translation 0 0 1.68
+      Pose {
+        translation 0 0 0.55
+        rotation 0 1 0 -1.05
         children [
-          Shape {
-            appearance PBRAppearance { baseColor 0.85 0.76 0.32 roughness 0.8 }
-            geometry Cylinder { height 0.25 radius 0.035 }
+          Pose {
+            translation 0.24 0 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.46 0.06 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 0.55
+        rotation 1 0 0 1.05
+        children [
+          Pose {
+            translation 0 0.24 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.06 0.46 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 0.55
+        rotation 1 0 0 -1.05
+        children [
+          Pose {
+            translation 0 0.24 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.055 0.44 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 1.15
+        rotation 0 1 0 0.85
+        children [
+          Pose {
+            translation 0.26 0 0
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.22 0.55 0.14
+                  roughness 0.55
+                }
+                geometry Box {
+                  size 0.52 0.08 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 1.15
+        rotation 0 1 0 -0.85
+        children [
+          Pose {
+            translation 0.26 0 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.50 0.07 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 1.15
+        rotation 1 0 0 0.85
+        children [
+          Pose {
+            translation 0 0.26 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.07 0.50 0.012
+                }
+              }
+            ]
+          }
+        ]
+      }
+      Pose {
+        translation 0 0 1.15
+        rotation 1 0 0 -0.85
+        children [
+          Pose {
+            translation 0 0.26 0
+            children [
+              Shape {
+                appearance USE LEAF_APP
+                geometry Box {
+                  size 0.065 0.48 0.012
+                }
+              }
+            ]
           }
         ]
       }
     ]
-    boundingObject Transform {
-      translation 0 0 0.8
-      children [ Cylinder { height 1.6 radius 0.03 } ]
+    boundingObject Pose {
+      translation 0 0 0.95
+      children [
+        Cylinder {
+          height 1.8
+          radius 0.03
+        }
+      ]
     }
   }
 }

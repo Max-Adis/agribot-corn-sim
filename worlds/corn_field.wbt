@@ -1,131 +1,423 @@
 #VRML_SIM R2025a utf8
+# Champ calqué sur agribot_field.world : 7 rangs, pas 0,85 m, plants tous les 0,60 m,
+# planches de 14 m. Plants à hauteur de maïs (~1,9 m). Repère ENU, Z vers le haut.
 
-EXTERNPROTO "webots://projects/objects/backgrounds/protos/TexturedBackground.proto"
-EXTERNPROTO "webots://projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "../protos/Agribot.proto"
 EXTERNPROTO "../protos/CornPlant.proto"
 EXTERNPROTO "../protos/WeedClump.proto"
 
 WorldInfo {
-  info [ "Modern Corn Field with Weeds for Agribot Navigation" ]
+  info [
+    "Champ de maïs Agribot : 7 rangs de 14 m, allée centrale à y = 0,425 m."
+  ]
   title "Agribot Corn Field"
-  basicTimeStep 16
+  basicTimeStep 8
   coordinateSystem "ENU"
+  contactProperties [
+    ContactProperties {
+      material1 "tire"
+      material2 "soil"
+      coulombFriction 1.2
+      bounce 0
+      bounceVelocity 0.01
+      softCFM 0.0001
+      bumpSound ""
+      rollSound ""
+      slideSound ""
+    }
+  ]
 }
 
 Viewpoint {
-  orientation 0.797 -0.315 -0.516 1.309
-  position -8 -6 5
+  fieldOfView 0.95
+  orientation -0.073616 0.440807 0.894578 0.369119
+  position -9.200 -3.600 2.600
+  description "Allée du maïs"
+  near 0.1
+  far 80
 }
 
-TexturedBackground {
-  texture "noon_cloudy_countryside"
-}
-TexturedBackgroundLight {
+Background {
+  skyColor [
+    0.53 0.76 0.95
+  ]
 }
 
 DirectionalLight {
-  direction 0.6 0.3 -0.75
-  intensity 3.0
-  castShadows TRUE
+  direction 0.35 0.15 -1
+  intensity 2.6
+  ambientIntensity 0.9
+  color 1 0.98 0.94
+  castShadows FALSE
+}
+DirectionalLight {
+  direction -0.25 -0.35 -0.8
+  intensity 0.55
+  ambientIntensity 0.35
+  castShadows FALSE
 }
 
 Solid {
   name "ground"
-  translation 0 0 -0.05
+  translation 0 0 -0.1
+  contactMaterial "soil"
   children [
     Shape {
       appearance PBRAppearance {
-        baseColor 0.26 0.18 0.10
+        baseColor 0.45 0.31 0.16
         roughness 0.95
       }
-      geometry Box { size 40 40 0.1 }
+      geometry Box {
+        size 60 36 0.2
+      }
     }
   ]
-  boundingObject Box { size 40 40 0.1 }
+  boundingObject Box {
+    size 60 36 0.2
+  }
 }
 
 Solid {
-  name "ridge_center"
-  translation 0 0 0.04
+  name "ridge_0"
+  translation 0 -2.550 0.035
   children [
     Shape {
-      appearance PBRAppearance { baseColor 0.32 0.20 0.10 roughness 0.9 }
-      geometry Box { size 14 0.22 0.08 }
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
     }
   ]
 }
 Solid {
-  name "ridge_right"
-  translation 0 0.85 0.04
+  name "ridge_1"
+  translation 0 -1.700 0.035
   children [
     Shape {
-      appearance PBRAppearance { baseColor 0.32 0.20 0.10 roughness 0.9 }
-      geometry Box { size 14 0.22 0.08 }
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
     }
   ]
 }
 Solid {
-  name "ridge_left"
-  translation 0 -0.85 0.04
+  name "ridge_2"
+  translation 0 -0.850 0.035
   children [
     Shape {
-      appearance PBRAppearance { baseColor 0.32 0.20 0.10 roughness 0.9 }
-      geometry Box { size 14 0.22 0.08 }
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
+    }
+  ]
+}
+Solid {
+  name "ridge_3"
+  translation 0 0.000 0.035
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
+    }
+  ]
+}
+Solid {
+  name "ridge_4"
+  translation 0 0.850 0.035
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
+    }
+  ]
+}
+Solid {
+  name "ridge_5"
+  translation 0 1.700 0.035
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
+    }
+  ]
+}
+Solid {
+  name "ridge_6"
+  translation 0 2.550 0.035
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.34 0.22 0.11
+        roughness 0.92
+      }
+      geometry Box {
+        size 14 0.16 0.07
+      }
     }
   ]
 }
 
-# Rang gauche, y = 0
-CornPlant { translation -5.5 0.0 0 }
-CornPlant { translation -4.7 0.0 0 }
-CornPlant { translation -3.9 0.0 0 }
-CornPlant { translation -3.1 0.0 0 }
-CornPlant { translation -2.3 0.0 0 }
-CornPlant { translation -1.5 0.0 0 }
-CornPlant { translation -0.7 0.0 0 }
-CornPlant { translation  0.1 0.0 0 }
-CornPlant { translation  0.9 0.0 0 }
-CornPlant { translation  1.7 0.0 0 }
+CornPlant { translation -6.600 -2.550 0 rotation 0 0 1 0.000 name "corn_0_0" }
+CornPlant { translation -6.000 -2.550 0 rotation 0 0 1 0.270 name "corn_0_1" }
+CornPlant { translation -5.400 -2.550 0 rotation 0 0 1 0.540 name "corn_0_2" }
+CornPlant { translation -4.800 -2.550 0 rotation 0 0 1 0.810 name "corn_0_3" }
+CornPlant { translation -4.200 -2.550 0 rotation 0 0 1 1.080 name "corn_0_4" }
+CornPlant { translation -3.600 -2.550 0 rotation 0 0 1 1.350 name "corn_0_5" }
+CornPlant { translation -3.000 -2.550 0 rotation 0 0 1 0.090 name "corn_0_6" }
+CornPlant { translation -2.400 -2.550 0 rotation 0 0 1 0.360 name "corn_0_7" }
+CornPlant { translation -1.800 -2.550 0 rotation 0 0 1 0.630 name "corn_0_8" }
+CornPlant { translation -1.200 -2.550 0 rotation 0 0 1 0.900 name "corn_0_9" }
+CornPlant { translation -0.600 -2.550 0 rotation 0 0 1 1.170 name "corn_0_10" }
+CornPlant { translation 0.000 -2.550 0 rotation 0 0 1 1.440 name "corn_0_11" }
+CornPlant { translation 0.600 -2.550 0 rotation 0 0 1 0.180 name "corn_0_12" }
+CornPlant { translation 1.200 -2.550 0 rotation 0 0 1 0.450 name "corn_0_13" }
+CornPlant { translation 1.800 -2.550 0 rotation 0 0 1 0.720 name "corn_0_14" }
+CornPlant { translation 2.400 -2.550 0 rotation 0 0 1 0.990 name "corn_0_15" }
+CornPlant { translation 3.000 -2.550 0 rotation 0 0 1 1.260 name "corn_0_16" }
+CornPlant { translation 3.600 -2.550 0 rotation 0 0 1 0.000 name "corn_0_17" }
+CornPlant { translation 4.200 -2.550 0 rotation 0 0 1 0.270 name "corn_0_18" }
+CornPlant { translation 4.800 -2.550 0 rotation 0 0 1 0.540 name "corn_0_19" }
+CornPlant { translation 5.400 -2.550 0 rotation 0 0 1 0.810 name "corn_0_20" }
+CornPlant { translation 6.000 -2.550 0 rotation 0 0 1 1.080 name "corn_0_21" }
+CornPlant { translation 6.600 -2.550 0 rotation 0 0 1 1.350 name "corn_0_22" }
+CornPlant { translation -6.600 -1.700 0 rotation 0 0 1 0.450 name "corn_1_0" }
+CornPlant { translation -6.000 -1.700 0 rotation 0 0 1 0.720 name "corn_1_1" }
+CornPlant { translation -5.400 -1.700 0 rotation 0 0 1 0.990 name "corn_1_2" }
+CornPlant { translation -4.800 -1.700 0 rotation 0 0 1 1.260 name "corn_1_3" }
+CornPlant { translation -4.200 -1.700 0 rotation 0 0 1 0.000 name "corn_1_4" }
+CornPlant { translation -3.600 -1.700 0 rotation 0 0 1 0.270 name "corn_1_5" }
+CornPlant { translation -3.000 -1.700 0 rotation 0 0 1 0.540 name "corn_1_6" }
+CornPlant { translation -2.400 -1.700 0 rotation 0 0 1 0.810 name "corn_1_7" }
+CornPlant { translation -1.800 -1.700 0 rotation 0 0 1 1.080 name "corn_1_8" }
+CornPlant { translation -1.200 -1.700 0 rotation 0 0 1 1.350 name "corn_1_9" }
+CornPlant { translation -0.600 -1.700 0 rotation 0 0 1 0.090 name "corn_1_10" }
+CornPlant { translation 0.000 -1.700 0 rotation 0 0 1 0.360 name "corn_1_11" }
+CornPlant { translation 0.600 -1.700 0 rotation 0 0 1 0.630 name "corn_1_12" }
+CornPlant { translation 1.200 -1.700 0 rotation 0 0 1 0.900 name "corn_1_13" }
+CornPlant { translation 1.800 -1.700 0 rotation 0 0 1 1.170 name "corn_1_14" }
+CornPlant { translation 2.400 -1.700 0 rotation 0 0 1 1.440 name "corn_1_15" }
+CornPlant { translation 3.000 -1.700 0 rotation 0 0 1 0.180 name "corn_1_16" }
+CornPlant { translation 3.600 -1.700 0 rotation 0 0 1 0.450 name "corn_1_17" }
+CornPlant { translation 4.200 -1.700 0 rotation 0 0 1 0.720 name "corn_1_18" }
+CornPlant { translation 4.800 -1.700 0 rotation 0 0 1 0.990 name "corn_1_19" }
+CornPlant { translation 5.400 -1.700 0 rotation 0 0 1 1.260 name "corn_1_20" }
+CornPlant { translation 6.000 -1.700 0 rotation 0 0 1 0.000 name "corn_1_21" }
+CornPlant { translation 6.600 -1.700 0 rotation 0 0 1 0.270 name "corn_1_22" }
+CornPlant { translation -6.600 -0.850 0 rotation 0 0 1 0.900 name "corn_2_0" }
+CornPlant { translation -6.000 -0.850 0 rotation 0 0 1 1.170 name "corn_2_1" }
+CornPlant { translation -5.400 -0.850 0 rotation 0 0 1 1.440 name "corn_2_2" }
+CornPlant { translation -4.800 -0.850 0 rotation 0 0 1 0.180 name "corn_2_3" }
+CornPlant { translation -4.200 -0.850 0 rotation 0 0 1 0.450 name "corn_2_4" }
+CornPlant { translation -3.600 -0.850 0 rotation 0 0 1 0.720 name "corn_2_5" }
+CornPlant { translation -3.000 -0.850 0 rotation 0 0 1 0.990 name "corn_2_6" }
+CornPlant { translation -2.400 -0.850 0 rotation 0 0 1 1.260 name "corn_2_7" }
+CornPlant { translation -1.800 -0.850 0 rotation 0 0 1 0.000 name "corn_2_8" }
+CornPlant { translation -1.200 -0.850 0 rotation 0 0 1 0.270 name "corn_2_9" }
+CornPlant { translation -0.600 -0.850 0 rotation 0 0 1 0.540 name "corn_2_10" }
+CornPlant { translation 0.000 -0.850 0 rotation 0 0 1 0.810 name "corn_2_11" }
+CornPlant { translation 0.600 -0.850 0 rotation 0 0 1 1.080 name "corn_2_12" }
+CornPlant { translation 1.200 -0.850 0 rotation 0 0 1 1.350 name "corn_2_13" }
+CornPlant { translation 1.800 -0.850 0 rotation 0 0 1 0.090 name "corn_2_14" }
+CornPlant { translation 2.400 -0.850 0 rotation 0 0 1 0.360 name "corn_2_15" }
+CornPlant { translation 3.000 -0.850 0 rotation 0 0 1 0.630 name "corn_2_16" }
+CornPlant { translation 3.600 -0.850 0 rotation 0 0 1 0.900 name "corn_2_17" }
+CornPlant { translation 4.200 -0.850 0 rotation 0 0 1 1.170 name "corn_2_18" }
+CornPlant { translation 4.800 -0.850 0 rotation 0 0 1 1.440 name "corn_2_19" }
+CornPlant { translation 5.400 -0.850 0 rotation 0 0 1 0.180 name "corn_2_20" }
+CornPlant { translation 6.000 -0.850 0 rotation 0 0 1 0.450 name "corn_2_21" }
+CornPlant { translation 6.600 -0.850 0 rotation 0 0 1 0.720 name "corn_2_22" }
+CornPlant { translation -6.600 0.000 0 rotation 0 0 1 1.350 name "corn_3_0" }
+CornPlant { translation -6.000 0.000 0 rotation 0 0 1 0.090 name "corn_3_1" }
+CornPlant { translation -5.400 0.000 0 rotation 0 0 1 0.360 name "corn_3_2" }
+CornPlant { translation -4.800 0.000 0 rotation 0 0 1 0.630 name "corn_3_3" }
+CornPlant { translation -4.200 0.000 0 rotation 0 0 1 0.900 name "corn_3_4" }
+CornPlant { translation -3.600 0.000 0 rotation 0 0 1 1.170 name "corn_3_5" }
+CornPlant { translation -3.000 0.000 0 rotation 0 0 1 1.440 name "corn_3_6" }
+CornPlant { translation -2.400 0.000 0 rotation 0 0 1 0.180 name "corn_3_7" }
+CornPlant { translation -1.800 0.000 0 rotation 0 0 1 0.450 name "corn_3_8" }
+CornPlant { translation -1.200 0.000 0 rotation 0 0 1 0.720 name "corn_3_9" }
+CornPlant { translation -0.600 0.000 0 rotation 0 0 1 0.990 name "corn_3_10" }
+CornPlant { translation 0.000 0.000 0 rotation 0 0 1 1.260 name "corn_3_11" }
+CornPlant { translation 0.600 0.000 0 rotation 0 0 1 0.000 name "corn_3_12" }
+CornPlant { translation 1.200 0.000 0 rotation 0 0 1 0.270 name "corn_3_13" }
+CornPlant { translation 1.800 0.000 0 rotation 0 0 1 0.540 name "corn_3_14" }
+CornPlant { translation 2.400 0.000 0 rotation 0 0 1 0.810 name "corn_3_15" }
+CornPlant { translation 3.000 0.000 0 rotation 0 0 1 1.080 name "corn_3_16" }
+CornPlant { translation 3.600 0.000 0 rotation 0 0 1 1.350 name "corn_3_17" }
+CornPlant { translation 4.200 0.000 0 rotation 0 0 1 0.090 name "corn_3_18" }
+CornPlant { translation 4.800 0.000 0 rotation 0 0 1 0.360 name "corn_3_19" }
+CornPlant { translation 5.400 0.000 0 rotation 0 0 1 0.630 name "corn_3_20" }
+CornPlant { translation 6.000 0.000 0 rotation 0 0 1 0.900 name "corn_3_21" }
+CornPlant { translation 6.600 0.000 0 rotation 0 0 1 1.170 name "corn_3_22" }
+CornPlant { translation -6.600 0.850 0 rotation 0 0 1 0.270 name "corn_4_0" }
+CornPlant { translation -6.000 0.850 0 rotation 0 0 1 0.540 name "corn_4_1" }
+CornPlant { translation -5.400 0.850 0 rotation 0 0 1 0.810 name "corn_4_2" }
+CornPlant { translation -4.800 0.850 0 rotation 0 0 1 1.080 name "corn_4_3" }
+CornPlant { translation -4.200 0.850 0 rotation 0 0 1 1.350 name "corn_4_4" }
+CornPlant { translation -3.600 0.850 0 rotation 0 0 1 0.090 name "corn_4_5" }
+CornPlant { translation -3.000 0.850 0 rotation 0 0 1 0.360 name "corn_4_6" }
+CornPlant { translation -2.400 0.850 0 rotation 0 0 1 0.630 name "corn_4_7" }
+CornPlant { translation -1.800 0.850 0 rotation 0 0 1 0.900 name "corn_4_8" }
+CornPlant { translation -1.200 0.850 0 rotation 0 0 1 1.170 name "corn_4_9" }
+CornPlant { translation -0.600 0.850 0 rotation 0 0 1 1.440 name "corn_4_10" }
+CornPlant { translation 0.000 0.850 0 rotation 0 0 1 0.180 name "corn_4_11" }
+CornPlant { translation 0.600 0.850 0 rotation 0 0 1 0.450 name "corn_4_12" }
+CornPlant { translation 1.200 0.850 0 rotation 0 0 1 0.720 name "corn_4_13" }
+CornPlant { translation 1.800 0.850 0 rotation 0 0 1 0.990 name "corn_4_14" }
+CornPlant { translation 2.400 0.850 0 rotation 0 0 1 1.260 name "corn_4_15" }
+CornPlant { translation 3.000 0.850 0 rotation 0 0 1 0.000 name "corn_4_16" }
+CornPlant { translation 3.600 0.850 0 rotation 0 0 1 0.270 name "corn_4_17" }
+CornPlant { translation 4.200 0.850 0 rotation 0 0 1 0.540 name "corn_4_18" }
+CornPlant { translation 4.800 0.850 0 rotation 0 0 1 0.810 name "corn_4_19" }
+CornPlant { translation 5.400 0.850 0 rotation 0 0 1 1.080 name "corn_4_20" }
+CornPlant { translation 6.000 0.850 0 rotation 0 0 1 1.350 name "corn_4_21" }
+CornPlant { translation 6.600 0.850 0 rotation 0 0 1 0.090 name "corn_4_22" }
+CornPlant { translation -6.600 1.700 0 rotation 0 0 1 0.720 name "corn_5_0" }
+CornPlant { translation -6.000 1.700 0 rotation 0 0 1 0.990 name "corn_5_1" }
+CornPlant { translation -5.400 1.700 0 rotation 0 0 1 1.260 name "corn_5_2" }
+CornPlant { translation -4.800 1.700 0 rotation 0 0 1 0.000 name "corn_5_3" }
+CornPlant { translation -4.200 1.700 0 rotation 0 0 1 0.270 name "corn_5_4" }
+CornPlant { translation -3.600 1.700 0 rotation 0 0 1 0.540 name "corn_5_5" }
+CornPlant { translation -3.000 1.700 0 rotation 0 0 1 0.810 name "corn_5_6" }
+CornPlant { translation -2.400 1.700 0 rotation 0 0 1 1.080 name "corn_5_7" }
+CornPlant { translation -1.800 1.700 0 rotation 0 0 1 1.350 name "corn_5_8" }
+CornPlant { translation -1.200 1.700 0 rotation 0 0 1 0.090 name "corn_5_9" }
+CornPlant { translation -0.600 1.700 0 rotation 0 0 1 0.360 name "corn_5_10" }
+CornPlant { translation 0.000 1.700 0 rotation 0 0 1 0.630 name "corn_5_11" }
+CornPlant { translation 0.600 1.700 0 rotation 0 0 1 0.900 name "corn_5_12" }
+CornPlant { translation 1.200 1.700 0 rotation 0 0 1 1.170 name "corn_5_13" }
+CornPlant { translation 1.800 1.700 0 rotation 0 0 1 1.440 name "corn_5_14" }
+CornPlant { translation 2.400 1.700 0 rotation 0 0 1 0.180 name "corn_5_15" }
+CornPlant { translation 3.000 1.700 0 rotation 0 0 1 0.450 name "corn_5_16" }
+CornPlant { translation 3.600 1.700 0 rotation 0 0 1 0.720 name "corn_5_17" }
+CornPlant { translation 4.200 1.700 0 rotation 0 0 1 0.990 name "corn_5_18" }
+CornPlant { translation 4.800 1.700 0 rotation 0 0 1 1.260 name "corn_5_19" }
+CornPlant { translation 5.400 1.700 0 rotation 0 0 1 0.000 name "corn_5_20" }
+CornPlant { translation 6.000 1.700 0 rotation 0 0 1 0.270 name "corn_5_21" }
+CornPlant { translation 6.600 1.700 0 rotation 0 0 1 0.540 name "corn_5_22" }
+CornPlant { translation -6.600 2.550 0 rotation 0 0 1 1.170 name "corn_6_0" }
+CornPlant { translation -6.000 2.550 0 rotation 0 0 1 1.440 name "corn_6_1" }
+CornPlant { translation -5.400 2.550 0 rotation 0 0 1 0.180 name "corn_6_2" }
+CornPlant { translation -4.800 2.550 0 rotation 0 0 1 0.450 name "corn_6_3" }
+CornPlant { translation -4.200 2.550 0 rotation 0 0 1 0.720 name "corn_6_4" }
+CornPlant { translation -3.600 2.550 0 rotation 0 0 1 0.990 name "corn_6_5" }
+CornPlant { translation -3.000 2.550 0 rotation 0 0 1 1.260 name "corn_6_6" }
+CornPlant { translation -2.400 2.550 0 rotation 0 0 1 0.000 name "corn_6_7" }
+CornPlant { translation -1.800 2.550 0 rotation 0 0 1 0.270 name "corn_6_8" }
+CornPlant { translation -1.200 2.550 0 rotation 0 0 1 0.540 name "corn_6_9" }
+CornPlant { translation -0.600 2.550 0 rotation 0 0 1 0.810 name "corn_6_10" }
+CornPlant { translation 0.000 2.550 0 rotation 0 0 1 1.080 name "corn_6_11" }
+CornPlant { translation 0.600 2.550 0 rotation 0 0 1 1.350 name "corn_6_12" }
+CornPlant { translation 1.200 2.550 0 rotation 0 0 1 0.090 name "corn_6_13" }
+CornPlant { translation 1.800 2.550 0 rotation 0 0 1 0.360 name "corn_6_14" }
+CornPlant { translation 2.400 2.550 0 rotation 0 0 1 0.630 name "corn_6_15" }
+CornPlant { translation 3.000 2.550 0 rotation 0 0 1 0.900 name "corn_6_16" }
+CornPlant { translation 3.600 2.550 0 rotation 0 0 1 1.170 name "corn_6_17" }
+CornPlant { translation 4.200 2.550 0 rotation 0 0 1 1.440 name "corn_6_18" }
+CornPlant { translation 4.800 2.550 0 rotation 0 0 1 0.180 name "corn_6_19" }
+CornPlant { translation 5.400 2.550 0 rotation 0 0 1 0.450 name "corn_6_20" }
+CornPlant { translation 6.000 2.550 0 rotation 0 0 1 0.720 name "corn_6_21" }
+CornPlant { translation 6.600 2.550 0 rotation 0 0 1 0.990 name "corn_6_22" }
 
-# Rang droit, y = 0.85
-CornPlant { translation -5.5 0.85 0 }
-CornPlant { translation -4.7 0.85 0 }
-CornPlant { translation -3.9 0.85 0 }
-CornPlant { translation -3.1 0.85 0 }
-CornPlant { translation -2.3 0.85 0 }
-CornPlant { translation -1.5 0.85 0 }
-CornPlant { translation -0.7 0.85 0 }
-CornPlant { translation  0.1 0.85 0 }
-CornPlant { translation  0.9 0.85 0 }
-CornPlant { translation  1.7 0.85 0 }
+WeedClump { translation -6.340 -2.225 0 rotation 0 0 1 0.000 name "weed_0" }
+WeedClump { translation -4.780 -2.125 0 rotation 0 0 1 0.400 name "weed_1" }
+WeedClump { translation -3.570 -2.025 0 rotation 0 0 1 0.800 name "weed_2" }
+WeedClump { translation -2.010 -2.175 0 rotation 0 0 1 1.200 name "weed_3" }
+WeedClump { translation -0.800 -2.075 0 rotation 0 0 1 1.600 name "weed_4" }
+WeedClump { translation 0.410 -2.225 0 rotation 0 0 1 2.000 name "weed_5" }
+WeedClump { translation 1.970 -2.125 0 rotation 0 0 1 2.400 name "weed_6" }
+WeedClump { translation 3.180 -2.025 0 rotation 0 0 1 2.800 name "weed_7" }
+WeedClump { translation 4.740 -2.175 0 rotation 0 0 1 0.000 name "weed_8" }
+WeedClump { translation 5.950 -2.075 0 rotation 0 0 1 0.400 name "weed_9" }
+WeedClump { translation -6.270 -1.225 0 rotation 0 0 1 0.400 name "weed_10" }
+WeedClump { translation -4.710 -1.375 0 rotation 0 0 1 0.800 name "weed_11" }
+WeedClump { translation -3.500 -1.275 0 rotation 0 0 1 1.200 name "weed_12" }
+WeedClump { translation -2.290 -1.175 0 rotation 0 0 1 1.600 name "weed_13" }
+WeedClump { translation -0.730 -1.325 0 rotation 0 0 1 2.000 name "weed_14" }
+WeedClump { translation 0.480 -1.225 0 rotation 0 0 1 2.400 name "weed_15" }
+WeedClump { translation 2.040 -1.375 0 rotation 0 0 1 2.800 name "weed_16" }
+WeedClump { translation 3.250 -1.275 0 rotation 0 0 1 0.000 name "weed_17" }
+WeedClump { translation 4.460 -1.175 0 rotation 0 0 1 0.400 name "weed_18" }
+WeedClump { translation 6.020 -1.325 0 rotation 0 0 1 0.800 name "weed_19" }
+WeedClump { translation -6.200 -0.475 0 rotation 0 0 1 0.800 name "weed_20" }
+WeedClump { translation -4.990 -0.375 0 rotation 0 0 1 1.200 name "weed_21" }
+WeedClump { translation -3.430 -0.525 0 rotation 0 0 1 1.600 name "weed_22" }
+WeedClump { translation -2.220 -0.425 0 rotation 0 0 1 2.000 name "weed_23" }
+WeedClump { translation -0.660 -0.325 0 rotation 0 0 1 2.400 name "weed_24" }
+WeedClump { translation 0.550 -0.475 0 rotation 0 0 1 2.800 name "weed_25" }
+WeedClump { translation 1.760 -0.375 0 rotation 0 0 1 0.000 name "weed_26" }
+WeedClump { translation 3.320 -0.525 0 rotation 0 0 1 0.400 name "weed_27" }
+WeedClump { translation 4.530 -0.425 0 rotation 0 0 1 0.800 name "weed_28" }
+WeedClump { translation 6.090 -0.325 0 rotation 0 0 1 1.200 name "weed_29" }
+WeedClump { translation -6.130 1.375 0 rotation 0 0 1 1.200 name "weed_30" }
+WeedClump { translation -4.920 1.225 0 rotation 0 0 1 1.600 name "weed_31" }
+WeedClump { translation -3.360 1.325 0 rotation 0 0 1 2.000 name "weed_32" }
+WeedClump { translation -2.150 1.175 0 rotation 0 0 1 2.400 name "weed_33" }
+WeedClump { translation -0.940 1.275 0 rotation 0 0 1 2.800 name "weed_34" }
+WeedClump { translation 0.620 1.375 0 rotation 0 0 1 0.000 name "weed_35" }
+WeedClump { translation 1.830 1.225 0 rotation 0 0 1 0.400 name "weed_36" }
+WeedClump { translation 3.390 1.325 0 rotation 0 0 1 0.800 name "weed_37" }
+WeedClump { translation 4.600 1.175 0 rotation 0 0 1 1.200 name "weed_38" }
+WeedClump { translation 5.810 1.275 0 rotation 0 0 1 1.600 name "weed_39" }
+WeedClump { translation -6.060 2.125 0 rotation 0 0 1 1.600 name "weed_40" }
+WeedClump { translation -4.850 2.225 0 rotation 0 0 1 2.000 name "weed_41" }
+WeedClump { translation -3.640 2.075 0 rotation 0 0 1 2.400 name "weed_42" }
+WeedClump { translation -2.080 2.175 0 rotation 0 0 1 2.800 name "weed_43" }
+WeedClump { translation -0.870 2.025 0 rotation 0 0 1 0.000 name "weed_44" }
+WeedClump { translation 0.690 2.125 0 rotation 0 0 1 0.400 name "weed_45" }
+WeedClump { translation 1.900 2.225 0 rotation 0 0 1 0.800 name "weed_46" }
+WeedClump { translation 3.110 2.075 0 rotation 0 0 1 1.200 name "weed_47" }
+WeedClump { translation 4.670 2.175 0 rotation 0 0 1 1.600 name "weed_48" }
+WeedClump { translation 5.880 2.025 0 rotation 0 0 1 2.000 name "weed_49" }
+WeedClump { translation -6.340 -3.250 0 rotation 0 0 1 2.000 name "weed_50" }
+WeedClump { translation -4.780 -3.150 0 rotation 0 0 1 2.400 name "weed_51" }
+WeedClump { translation -3.570 -3.050 0 rotation 0 0 1 2.800 name "weed_52" }
+WeedClump { translation -2.010 -3.200 0 rotation 0 0 1 0.000 name "weed_53" }
+WeedClump { translation -0.800 -3.100 0 rotation 0 0 1 0.400 name "weed_54" }
+WeedClump { translation 0.410 -3.250 0 rotation 0 0 1 0.800 name "weed_55" }
+WeedClump { translation 1.970 -3.150 0 rotation 0 0 1 1.200 name "weed_56" }
+WeedClump { translation 3.180 -3.050 0 rotation 0 0 1 1.600 name "weed_57" }
+WeedClump { translation 4.740 -3.200 0 rotation 0 0 1 2.000 name "weed_58" }
+WeedClump { translation 5.950 -3.100 0 rotation 0 0 1 2.400 name "weed_59" }
+WeedClump { translation -6.270 3.200 0 rotation 0 0 1 2.400 name "weed_60" }
+WeedClump { translation -4.710 3.050 0 rotation 0 0 1 2.800 name "weed_61" }
+WeedClump { translation -3.500 3.150 0 rotation 0 0 1 0.000 name "weed_62" }
+WeedClump { translation -2.290 3.250 0 rotation 0 0 1 0.400 name "weed_63" }
+WeedClump { translation -0.730 3.100 0 rotation 0 0 1 0.800 name "weed_64" }
+WeedClump { translation 0.480 3.200 0 rotation 0 0 1 1.200 name "weed_65" }
+WeedClump { translation 2.040 3.050 0 rotation 0 0 1 1.600 name "weed_66" }
+WeedClump { translation 3.250 3.150 0 rotation 0 0 1 2.000 name "weed_67" }
+WeedClump { translation 4.460 3.250 0 rotation 0 0 1 2.400 name "weed_68" }
+WeedClump { translation 6.020 3.100 0 rotation 0 0 1 2.800 name "weed_69" }
 
-# Adventices entre les rangs et dans l'allée
-WeedClump { translation -5.10  0.35 0 }
-WeedClump { translation -4.85  0.52 0 }
-WeedClump { translation -4.30  0.28 0 }
-WeedClump { translation -3.75  0.44 0 }
-WeedClump { translation -3.40  0.58 0 }
-WeedClump { translation -2.90  0.32 0 }
-WeedClump { translation -2.45  0.48 0 }
-WeedClump { translation -1.90  0.38 0 }
-WeedClump { translation -1.35  0.52 0 }
-WeedClump { translation -0.80  0.40 0 }
-WeedClump { translation -0.20  0.45 0 }
-WeedClump { translation  0.40  0.30 0 }
-WeedClump { translation  1.10  0.50 0 }
-WeedClump { translation -5.20 -0.45 0 }
-WeedClump { translation -4.60 -0.38 0 }
-WeedClump { translation -3.80 -0.50 0 }
-WeedClump { translation -2.95 -0.40 0 }
-WeedClump { translation -2.10 -0.46 0 }
-WeedClump { translation -5.10  1.25 0 }
-WeedClump { translation -4.40  1.32 0 }
-WeedClump { translation -3.60  1.22 0 }
-WeedClump { translation -2.75  1.30 0 }
-
-# Début de l'allée centrale. z = 0 : les roues (rayon 8,25 cm) touchent le sol.
 Agribot {
-  translation -5.5 0.425 0
+  translation -5.5 0.425 0.002
   rotation 0 0 1 0
 }
+
