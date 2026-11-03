@@ -1,0 +1,5 @@
+# webots.cloud lit ce fichier à la racine du dépôt.
+# Le monde ouvert est celui de l'URL GitHub, pas un champ "world".
+# La version (R2023b) est lue dans l'en-tête du fichier .wbt.
+type: demo
+publish: true

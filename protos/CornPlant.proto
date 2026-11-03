@@ -1,0 +1,59 @@
+#VRML_SIM R2023b utf8
+# Tige 1.6 m, feuilles arquées, fleur dorée.
+
+PROTO CornPlant [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "corn plant"
+]
+{
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+      Transform {
+        translation 0 0 0.8
+        children [
+          Shape {
+            appearance PBRAppearance { baseColor 0.28 0.55 0.15 roughness 0.7 }
+            geometry Cylinder { height 1.6 radius 0.022 }
+          }
+        ]
+      }
+      Transform {
+        translation 0.15 0.05 0.65
+        rotation 0.3 0.6 0.2 0.8
+        children [
+          Shape {
+            appearance PBRAppearance { baseColor 0.20 0.48 0.12 roughness 0.6 }
+            geometry Sphere { radius 0.28 }
+          }
+        ]
+      }
+      Transform {
+        translation -0.15 0.08 1.05
+        rotation -0.4 -0.5 0.3 0.9
+        children [
+          Shape {
+            appearance PBRAppearance { baseColor 0.22 0.50 0.14 roughness 0.6 }
+            geometry Sphere { radius 0.30 }
+          }
+        ]
+      }
+      Transform {
+        translation 0 0 1.68
+        children [
+          Shape {
+            appearance PBRAppearance { baseColor 0.85 0.76 0.32 roughness 0.8 }
+            geometry Cylinder { height 0.25 radius 0.035 }
+          }
+        ]
+      }
+    ]
+    boundingObject Transform {
+      translation 0 0 0.8
+      children [ Cylinder { height 1.6 radius 0.03 } ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+#VRML_SIM R2023b utf8
+# Model: Agribot v7 for Agricultural Simulation
+
+PROTO Agribot [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "agribot"
+  field SFString   controller  "agribot_controller"
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    controller IS controller
+    children [
+      # Châssis principal
+      Transform {
+        translation -0.018 0 0.255
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.16 0.34 0.60
+              roughness 0.4
+              metalness 0.2
+            }
+            geometry Box {
+              size 0.84 0.43 0.29
+            }
+          }
+        ]
+      }
+      # Caméra frontale : regarde vers +X (le long de l'allée)
+      Camera {
+        translation 0.408 0 0.420
+        rotation 0 1 0 1.5708
+        name "front_camera"
+        fieldOfView 1.047
+        width 640
+        height 480
+      }
+      # LiDAR 360° horizontal (le balayage natif tourne autour de Y)
+      Lidar {
+        translation 0.342 0 0.472
+        rotation 1 0 0 -1.5708
+        name "rplidar"
+        horizontalResolution 720
+        fieldOfView 6.28318
+        minRange 0.15
+        maxRange 12.0
+        numberOfLayers 1
+      }
+      # Roue avant gauche (cylindre Webots aligné sur Y, axe de roulis)
+      HingeJoint {
+        jointParameters HingeJointParameters { axis 0 1 0 anchor 0.30 0.24 0.0825 }
+        device [ RotationalMotor { name "fl_motor" maxVelocity 18 maxTorque 12 } ]
+        endPoint Solid {
+          translation 0.30 0.24 0.0825
+          name "fl_wheel"
+          children [
+            Shape {
+              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
+              geometry Cylinder { height 0.032 radius 0.0825 }
+            }
+          ]
+          boundingObject Cylinder { height 0.032 radius 0.0825 }
+          physics Physics { mass 0.65 }
+        }
+      }
+      # Roue avant droite
+      HingeJoint {
+        jointParameters HingeJointParameters { axis 0 1 0 anchor 0.30 -0.24 0.0825 }
+        device [ RotationalMotor { name "fr_motor" maxVelocity 18 maxTorque 12 } ]
+        endPoint Solid {
+          translation 0.30 -0.24 0.0825
+          name "fr_wheel"
+          children [
+            Shape {
+              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
+              geometry Cylinder { height 0.032 radius 0.0825 }
+            }
+          ]
+          boundingObject Cylinder { height 0.032 radius 0.0825 }
+          physics Physics { mass 0.65 }
+        }
+      }
+      # Roue arrière gauche
+      HingeJoint {
+        jointParameters HingeJointParameters { axis 0 1 0 anchor -0.30 0.24 0.0825 }
+        device [ RotationalMotor { name "rl_motor" maxVelocity 18 maxTorque 12 } ]
+        endPoint Solid {
+          translation -0.30 0.24 0.0825
+          name "rl_wheel"
+          children [
+            Shape {
+              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
+              geometry Cylinder { height 0.032 radius 0.0825 }
+            }
+          ]
+          boundingObject Cylinder { height 0.032 radius 0.0825 }
+          physics Physics { mass 0.65 }
+        }
+      }
+      # Roue arrière droite
+      HingeJoint {
+        jointParameters HingeJointParameters { axis 0 1 0 anchor -0.30 -0.24 0.0825 }
+        device [ RotationalMotor { name "rr_motor" maxVelocity 18 maxTorque 12 } ]
+        endPoint Solid {
+          translation -0.30 -0.24 0.0825
+          name "rr_wheel"
+          children [
+            Shape {
+              appearance PBRAppearance { baseColor 0.20 0.45 0.19 roughness 0.8 }
+              geometry Cylinder { height 0.032 radius 0.0825 }
+            }
+          ]
+          boundingObject Cylinder { height 0.032 radius 0.0825 }
+          physics Physics { mass 0.65 }
+        }
+      }
+    ]
+    boundingObject Transform {
+      translation -0.018 0 0.255
+      children [ Box { size 0.84 0.43 0.29 } ]
+    }
+    physics Physics {
+      density -1
+      mass 24.0
+      centerOfMass [ 0 0 0.22 ]
+      inertiaMatrix [ 0.85 1.15 1.45, 0 0 0 ]
+    }
+  }
+}
