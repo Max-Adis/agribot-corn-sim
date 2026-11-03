@@ -1,2 +1,5 @@
+# webots.cloud lit ce fichier à la racine du dépôt.
+# Le monde ouvert est celui de l'URL GitHub.
+# La version vient de l'en-tête du .wbt et du Dockerfile (R2025a).
 type: demo
 publish: true

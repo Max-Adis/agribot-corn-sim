@@ -44,11 +44,13 @@ PROTO Agribot [
         translation 0.342 0 0.472
         rotation 1 0 0 -1.5708
         name "rplidar"
-        horizontalResolution 720
-        fieldOfView 6.28318
+        horizontalResolution 512
+        fieldOfView 3.1416
+        verticalFieldOfView 0.2
+        numberOfLayers 1
         minRange 0.15
         maxRange 12.0
-        numberOfLayers 1
+        type "rotating"
       }
       # Roue avant gauche (cylindre Webots aligné sur Y, axe de roulis)
       HingeJoint {
