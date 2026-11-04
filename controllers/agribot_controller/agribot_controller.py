@@ -11,9 +11,10 @@ JOINT_SPEED = 2.0
 CRUISE = 1.5
 # Centre du robot → touffe, là où le bec atteint encore la base (plan du bras ~0,30 m).
 STANDOFF = 0.29
-GRASP_X0 = 0.25
-GRASP_X1 = 0.32
-GRASP_Z = 0.04
+# Arrêt où le poignet rabattu touche encore la touffe à moins de 5 cm.
+GRASP_X0 = 0.22
+GRASP_X1 = 0.26
+GRASP_Z = 0.14
 SHOULDER_X = 0.170
 SHOULDER_Y = -0.021
 SHOULDER_Z = 0.200
@@ -79,7 +80,8 @@ def chain(q2, q3, q4):
     """Points (u, z) du coude, du poignet et de la pointe du bec."""
     a1 = A1_0 - q2
     a2 = A2_0 - (q2 + q3)
-    a3 = A3_0 - (q2 + q3 + q4)
+    # S4 est en -Y : q4 positif se rabat avec l'épaule, le bec vers le bas.
+    a3 = A3_0 - q2 - q3 + q4
     points = []
     along = 0.0
     height = 0.0
@@ -95,10 +97,10 @@ def solve_arm(along, z_abs):
     height_rel = z_abs - SHOULDER_Z
     length = L3 + TIP
     best = None
-    for degree in range(-150, -40):
-        a3 = math.radians(degree)
-        wrist_u = along - length * math.cos(a3)
-        wrist_z = height_rel - length * math.sin(a3)
+    for degree in range(-150, -20):
+        a3_aim = math.radians(degree)
+        wrist_u = along - length * math.cos(a3_aim)
+        wrist_z = height_rel - length * math.sin(a3_aim)
         distance = math.hypot(wrist_u, wrist_z)
         if distance > L1 + L2 - 1e-4 or distance < abs(L1 - L2) + 1e-4:
             continue
@@ -111,15 +113,14 @@ def solve_arm(along, z_abs):
             elbow_u = L1 * math.cos(a1)
             elbow_z = L1 * math.sin(a1)
             a2 = math.atan2(wrist_z - elbow_z, wrist_u - elbow_u)
-            q2 = wrap(A1_0 - a1)
-            q3 = wrap(A2_0 - a2 - q2)
-            q4 = wrap(A3_0 - a3 - q2 - q3)
-            angles = (
-                clamp(q2, LIMITS[0][0], LIMITS[0][1]),
-                clamp(q3, LIMITS[1][0], LIMITS[1][1]),
-                clamp(q4, LIMITS[2][0], LIMITS[2][1]),
-            )
-            if angles != (q2, q3, q4):
+            q2 = clamp(wrap(A1_0 - a1), LIMITS[0][0], LIMITS[0][1])
+            q3 = clamp(wrap(A2_0 - a2 - q2), LIMITS[1][0], LIMITS[1][1])
+            q4 = clamp(wrap(a3_aim - A3_0 + q2 + q3), LIMITS[2][0], LIMITS[2][1])
+            a1 = A1_0 - q2
+            a2 = A2_0 - (q2 + q3)
+            a3 = A3_0 - q2 - q3 + q4
+            # Bec sous l'horizontale et vers la touffe, pas vers le haut ni l'arrière.
+            if a3 > -0.25 or a3 < -1.75 or q2 < 0.0 or q4 < 0.0:
                 continue
             height = 0.0
             lowest = 1e9
@@ -130,12 +131,40 @@ def solve_arm(along, z_abs):
                 continue
             tip_u = L1 * math.cos(a1) + L2 * math.cos(a2) + length * math.cos(a3)
             tip_z = SHOULDER_Z + L1 * math.sin(a1) + L2 * math.sin(a2) + length * math.sin(a3)
-            if abs(tip_u - along) + abs(tip_z - z_abs) > 0.02:
+            miss = math.hypot(tip_u - along, tip_z - z_abs)
+            if miss > 0.05:
                 continue
-            # Bec vers le bas, épaule qui descend vers la touffe.
-            cost = (abs(a3 + math.pi / 2.0), 0.0 if q2 >= 0.0 else 1.0, abs(q2) + abs(q3) + abs(q4))
+            cost = (miss, abs(a3 + 1.05), abs(q2) + abs(q3) + abs(q4))
+            angles = (q2, q3, q4)
             if best is None or cost < best[0]:
                 best = (cost, angles)
+    # Butée S4 positive : le poignet accompagne l'épaule jusqu'au rang.
+    q4_stop = LIMITS[2][1]
+    q2 = LIMITS[0][0]
+    while q2 <= LIMITS[0][1] + 1e-9:
+        q3 = LIMITS[1][0]
+        while q3 <= LIMITS[1][1] + 1e-9:
+            if q2 >= 0.0 and q4_stop >= 0.0:
+                a1 = A1_0 - q2
+                a2 = A2_0 - (q2 + q3)
+                a3 = A3_0 - q2 - q3 + q4_stop
+                if -1.75 <= a3 <= -0.25:
+                    height = 0.0
+                    lowest = 1e9
+                    for seg, ang in ((L1, a1), (L2, a2), (L3, a3), (TIP, a3)):
+                        height += seg * math.sin(ang)
+                        lowest = min(lowest, SHOULDER_Z + height)
+                    if lowest >= 0.03:
+                        tip_u = L1 * math.cos(a1) + L2 * math.cos(a2) + length * math.cos(a3)
+                        tip_z = SHOULDER_Z + height
+                        miss = math.hypot(tip_u - along, tip_z - z_abs)
+                        if miss <= 0.05:
+                            cost = (miss, abs(a3 + 1.05), abs(q2) + abs(q3) + abs(q4_stop))
+                            angles = (q2, q3, q4_stop)
+                            if best is None or cost < best[0]:
+                                best = (cost, angles)
+            q3 += 0.04
+        q2 += 0.04
     if best is None:
         return None
     return best[1]

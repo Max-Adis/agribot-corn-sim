@@ -169,7 +169,8 @@ PROTO Agribot [
                         }
                         HingeJoint {
                           jointParameters HingeJointParameters {
-                            axis 0 1 0
+                            # -Y : à +Y le poignet tournait à l'opposé de l'épaule et ne se rabattait pas.
+                            axis 0 -1 0
                             anchor -0.226577 -0.0275 0.105655
                             dampingConstant 0.08
                             staticFriction 0.04
