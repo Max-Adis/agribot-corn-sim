@@ -7,18 +7,27 @@ from controller import Keyboard, Supervisor
 MAX_WHEEL = 4.8
 TURN = 3.6
 WHEEL_ACCEL = 12.0
-JOINT_SPEED = 0.7
+JOINT_SPEED = 2.0
 CRUISE = 1.5
-# Distance épaule → touffe où la pince descend encore au-dessus du sol.
-REACH = 0.50
-GRIP_Z = 0.10
+# Centre du robot → touffe, là où le bec atteint encore la base (plan du bras ~0,30 m).
+STANDOFF = 0.29
+GRASP_X0 = 0.25
+GRASP_X1 = 0.32
+GRASP_Z = 0.04
 SHOULDER_X = 0.170
+SHOULDER_Y = -0.021
 SHOULDER_Z = 0.200
 LANE_Y = 0.425
 ROW_END_X = 6.5
 
-# Longueurs XZ des ancres dans Agribot.proto : S2→S3, S3→S4, S4→S5.
-L1, L2, L3 = 0.15, 0.25, 0.15
+# Longueurs XZ des translations Agribot.proto : S2→S3, S3→S4, S4→S5.
+L1 = math.hypot(0.063393, 0.135946)
+L2 = math.hypot(0.226577, 0.105655)
+L3 = math.hypot(0.013073, 0.149429)
+# Bec fixe au-delà de l'axe S5, le long du même segment (60 mm).
+TIP = 0.060
+# Décalage Y du bec par rapport à l'origine S2 (translations S4 puis S5).
+TIP_Y = -0.0275 - 0.0045
 A1_0 = math.atan2(0.135946, 0.063393)
 A2_0 = math.atan2(0.105655, -0.226577)
 A3_0 = math.atan2(-0.149429, 0.013073)
@@ -66,27 +75,29 @@ def pressed_keys(keyboard):
 
 
 def chain(q2, q3, q4):
-    """Points (u, z monde) du coude, du poignet et de la pince. u > 0 devant le bras."""
+    """Points (u, z) du coude, du poignet et de la pointe du bec."""
     a1 = A1_0 - q2
     a2 = A2_0 - (q2 + q3)
     a3 = A3_0 - (q2 + q3 + q4)
     points = []
     along = 0.0
     height = 0.0
-    for length, angle in ((L1, a1), (L2, a2), (L3, a3)):
+    for length, angle in ((L1, a1), (L2, a2), (L3 + TIP, a3)):
         along += length * math.cos(angle)
         height += length * math.sin(angle)
         points.append((along, SHOULDER_Z + height))
     return points
 
 
-def solve_arm(along, height_rel):
-    """Loi des cosinus dans le plan du bras. height_rel est z pince − z épaule."""
+def solve_arm(along, z_abs):
+    """Pointe du bec sur (along, z_abs). None si la touffe est hors portée."""
+    height_rel = z_abs - SHOULDER_Z
+    length = L3 + TIP
     best = None
-    for degree in range(-200, 90):
+    for degree in range(-150, -40):
         a3 = math.radians(degree)
-        wrist_u = along - L3 * math.cos(a3)
-        wrist_z = height_rel - L3 * math.sin(a3)
+        wrist_u = along - length * math.cos(a3)
+        wrist_z = height_rel - length * math.sin(a3)
         distance = math.hypot(wrist_u, wrist_z)
         if distance > L1 + L2 - 1e-4 or distance < abs(L1 - L2) + 1e-4:
             continue
@@ -102,19 +113,26 @@ def solve_arm(along, height_rel):
             q2 = wrap(A1_0 - a1)
             q3 = wrap(A2_0 - a2 - q2)
             q4 = wrap(A3_0 - a3 - q2 - q3)
-            angles = (q2, q3, q4)
-            if not all(LIMITS[i][0] <= angles[i] <= LIMITS[i][1] for i in range(3)):
+            angles = (
+                clamp(q2, LIMITS[0][0], LIMITS[0][1]),
+                clamp(q3, LIMITS[1][0], LIMITS[1][1]),
+                clamp(q4, LIMITS[2][0], LIMITS[2][1]),
+            )
+            if angles != (q2, q3, q4):
                 continue
-            points = chain(q2, q3, q4)
-            lowest = min(point[1] for point in points)
-            if lowest < 0.035:
+            height = 0.0
+            lowest = 1e9
+            for seg, ang in ((L1, a1), (L2, a2), (L3, a3), (TIP, a3)):
+                height += seg * math.sin(ang)
+                lowest = min(lowest, SHOULDER_Z + height)
+            if lowest < 0.03:
                 continue
-            tip = points[-1]
-            error = abs(tip[0] - along) + abs(tip[1] - (SHOULDER_Z + height_rel))
-            if error > 0.025:
+            tip_u = L1 * math.cos(a1) + L2 * math.cos(a2) + length * math.cos(a3)
+            tip_z = SHOULDER_Z + L1 * math.sin(a1) + L2 * math.sin(a2) + length * math.sin(a3)
+            if abs(tip_u - along) + abs(tip_z - z_abs) > 0.02:
                 continue
-            # Préfère le bras le plus haut, puis le moins plié.
-            cost = (-lowest, abs(q2) + abs(q3) + abs(q4))
+            # Bec vers le bas, épaule qui descend vers la touffe.
+            cost = (abs(a3 + math.pi / 2.0), 0.0 if q2 >= 0.0 else 1.0, abs(q2) + abs(q3) + abs(q4))
             if best is None or cost < best[0]:
                 best = (cost, angles)
     if best is None:
@@ -151,17 +169,21 @@ def heading_of(rotation):
 
 
 def shoulder_yaw(x_rel, y_rel):
+    # Axe S1 = (0, 0, 1) : angle positif (main droite) tourne +X vers +Y.
+    # +Y est à gauche (ENU, nez vers +X). Une touffe à gauche garde ce signe.
     yaw = math.atan2(y_rel, x_rel - SHOULDER_X)
-    for _ in range(3):
-        sx = SHOULDER_X + 0.021 * math.sin(yaw)
-        sy = -0.021 * math.cos(yaw)
-        yaw = math.atan2(y_rel - sy, x_rel - sx)
+    for _ in range(5):
+        sx = SHOULDER_X - SHOULDER_Y * math.sin(yaw)
+        sy = SHOULDER_Y * math.cos(yaw)
+        ax = x_rel - TIP_Y * (-math.sin(yaw))
+        ay = y_rel - TIP_Y * math.cos(yaw)
+        yaw = math.atan2(ay - sy, ax - sx)
     return clamp(yaw, -2.30, 2.30)
 
 
-def reach_distance(x_rel, y_rel, yaw):
-    sx = SHOULDER_X + 0.021 * math.sin(yaw)
-    sy = -0.021 * math.cos(yaw)
+def reach_along(x_rel, y_rel, yaw):
+    sx = SHOULDER_X - SHOULDER_Y * math.sin(yaw)
+    sy = SHOULDER_Y * math.cos(yaw)
     dx = x_rel - sx
     dy = y_rel - sy
     return dx * math.cos(yaw) + dy * math.sin(yaw)
@@ -169,11 +191,11 @@ def reach_distance(x_rel, y_rel, yaw):
 
 def gripper_local(yaw, q2, q3, q4):
     tip = chain(q2, q3, q4)[-1]
-    sx = SHOULDER_X + 0.021 * math.sin(yaw)
-    sy = -0.021 * math.cos(yaw)
+    sx = SHOULDER_X - SHOULDER_Y * math.sin(yaw)
+    sy = SHOULDER_Y * math.cos(yaw)
     return (
-        sx + tip[0] * math.cos(yaw),
-        sy + tip[0] * math.sin(yaw),
+        sx + tip[0] * math.cos(yaw) - TIP_Y * math.sin(yaw),
+        sy + tip[0] * math.sin(yaw) + TIP_Y * math.cos(yaw),
         tip[1],
     )
 
@@ -249,7 +271,7 @@ def camera_sees_weed(camera, image, x_rel, y_rel):
         return False
     if camera_sees_side(camera, image, y_rel > 0.0):
         return True
-    projected = project_weed(camera, x_rel, y_rel, GRIP_Z)
+    projected = project_weed(camera, x_rel, y_rel, GRASP_Z)
     if projected is None:
         return False
     px, py = projected
@@ -319,11 +341,11 @@ def run_robot():
     if camera is None:
         print("front_camera introuvable.", flush=True)
     else:
-        camera.enable(time_step * 2)
+        camera.enable(64)
 
     lidar = robot.getDevice('rplidar')
     if lidar is not None:
-        lidar.enable(time_step * 2)
+        lidar.enable(128)
 
     keyboard = robot.getKeyboard()
     keyboard.enable(time_step)
@@ -490,40 +512,41 @@ def run_robot():
                             position[0], position[1], position[2], translation, rotation
                         )
                         side = 1.0 if y_rel >= 0.0 else -1.0
-                        lane = position[1] - side * REACH
-                        aligned = abs(abs(y_rel) - REACH) < 0.06
-                        beside = 0.06 < x_rel < 0.30
-                        if beside and (aligned or x_rel < 0.16):
+                        lane = position[1] - side * STANDOFF
+                        aligned = abs(abs(y_rel) - STANDOFF) < 0.025
+                        in_window = GRASP_X0 <= x_rel <= GRASP_X1
+                        if in_window and aligned:
                             speed = 0.0
                             state = 'brake'
                             hold = 0
-                        elif x_rel < 0.05:
+                        elif x_rel < GRASP_X0:
                             target['skip'] = True
                             target = None
                             speed = CRUISE
                         else:
-                            speed = 0.7 if x_rel < 1.1 else CRUISE
+                            speed = 0.45 if x_rel < 0.7 else CRUISE
                     else:
                         speed = CRUISE
             elif state == 'brake':
                 speed = 0.0
                 hold += 1
-                if (abs(left_speed) < 0.2 and abs(right_speed) < 0.2) or hold > 40:
+                if target is None:
+                    state = 'cruise'
+                elif (abs(left_speed) < 0.2 and abs(right_speed) < 0.2) or hold > 20:
                     position = target['node'].getPosition()
-                    x_rel, y_rel, _z_rel = world_to_robot(
+                    x_rel, y_rel, z_rel = world_to_robot(
                         position[0], position[1], position[2], translation, rotation
                     )
+                    # Cible = base de la touffe, quelques cm au-dessus du sol, dans le plan du bras.
+                    # Le bec dépasse S5 de TIP : la pointe doit tomber sur ce point, pas au-delà.
+                    z_aim = z_rel + GRASP_Z
                     yaw = shoulder_yaw(x_rel, y_rel)
-                    along = reach_distance(x_rel, y_rel, yaw)
-                    solved = solve_arm(along, GRIP_Z - SHOULDER_Z)
+                    along = reach_along(x_rel, y_rel, yaw)
+                    solved = solve_arm(along, z_aim)
                     if solved is None:
-                        solved = solve_arm(REACH, GRIP_Z - SHOULDER_Z)
-                    if solved is None or target is None:
-                        if target is not None:
-                            target['skip'] = True
+                        target['skip'] = True
                         target = None
-                        state = 'stow'
-                        set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
+                        state = 'cruise'
                     else:
                         side_name = "gauche" if y_rel > 0.0 else "droite"
                         print(
@@ -575,7 +598,7 @@ def run_robot():
                         state = 'cruise'
 
             y_error = lane - translation[1]
-            steer = clamp(2.2 * y_error - 2.0 * heading, -1.2, 1.2)
+            steer = clamp(3.2 * y_error - 2.0 * heading, -1.2, 1.2)
             if state != 'cruise' or speed == 0.0:
                 steer = 0.0
             left_target = clamp(speed - steer, -MAX_WHEEL, MAX_WHEEL)

@@ -11,7 +11,7 @@ WorldInfo {
     "Champ de maïs Agribot : 7 rangs de 14 m, allée centrale à y = 0,425 m."
   ]
   title "Agribot Corn Field"
-  basicTimeStep 8
+  basicTimeStep 32
   coordinateSystem "ENU"
   contactProperties [
     ContactProperties {

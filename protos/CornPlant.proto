@@ -1,6 +1,6 @@
 #VRML_SIM R2025a utf8
-# Maïs d'environ 1,9 m. Le cylindre Webots est selon Z.
-# Seule la tige est un obstacle : l'allée de 0,85 m reste carrossable.
+# Maïs d'environ 1,9 m, visuel seulement. Le cylindre Webots est selon Z.
+# Pas de Physics ni de boundingObject : les tiges ne ralentissent plus la physique.
 
 PROTO CornPlant [
   field SFVec3f    translation 0 0 0
@@ -188,14 +188,5 @@ PROTO CornPlant [
         ]
       }
     ]
-    boundingObject Pose {
-      translation 0 0 0.95
-      children [
-        Cylinder {
-          height 1.8
-          radius 0.03
-        }
-      ]
-    }
   }
 }
