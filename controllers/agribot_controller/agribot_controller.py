@@ -17,7 +17,7 @@ GRASP_Z = 0.04
 SHOULDER_X = 0.170
 SHOULDER_Y = -0.021
 SHOULDER_Z = 0.200
-LANE_Y = 0.425
+LANE_Y = 0.0
 ROW_END_X = 6.5
 
 # Longueurs XZ des translations Agribot.proto : S2→S3, S3→S4, S4→S5.
@@ -511,11 +511,9 @@ def run_robot():
                         x_rel, y_rel, _z_rel = world_to_robot(
                             position[0], position[1], position[2], translation, rotation
                         )
-                        side = 1.0 if y_rel >= 0.0 else -1.0
-                        lane = position[1] - side * STANDOFF
-                        aligned = abs(abs(y_rel) - STANDOFF) < 0.025
                         in_window = GRASP_X0 <= x_rel <= GRASP_X1
-                        if in_window and aligned:
+                        in_alley = abs(translation[1] - LANE_Y) < 0.1
+                        if in_window and in_alley:
                             speed = 0.0
                             state = 'brake'
                             hold = 0
@@ -543,6 +541,12 @@ def run_robot():
                     yaw = shoulder_yaw(x_rel, y_rel)
                     along = reach_along(x_rel, y_rel, yaw)
                     solved = solve_arm(along, z_aim)
+                    if solved is not None:
+                        tip_local = gripper_local(yaw, solved[0], solved[1], solved[2])
+                        miss = math.sqrt((tip_local[0] - x_rel)**2 + (tip_local[1] - y_rel)**2 + (tip_local[2] - z_aim)**2)
+                        if miss > 0.05:
+                            solved = None
+                            
                     if solved is None:
                         target['skip'] = True
                         target = None
