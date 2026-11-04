@@ -1,11 +1,31 @@
-"""Contrôleur Agribot v7 pour Webots : téléopération clavier."""
-from controller import Keyboard, Robot
+"""Contrôleur Agribot v7 : téléopération clavier et désherbage autonome."""
+import math
+
+from controller import Keyboard, Supervisor
 
 # 4.8 rad/s * rayon 0.0825 m ≈ 0.4 m/s
 MAX_WHEEL = 4.8
 TURN = 3.6
 WHEEL_ACCEL = 12.0
 JOINT_SPEED = 0.7
+CRUISE = 1.5
+# Distance épaule → touffe où la pince descend encore au-dessus du sol.
+REACH = 0.50
+GRIP_Z = 0.10
+SHOULDER_X = 0.170
+SHOULDER_Z = 0.200
+LANE_Y = 0.425
+ROW_END_X = 6.5
+
+# Longueurs XZ des ancres dans Agribot.proto : S2→S3, S3→S4, S4→S5.
+L1, L2, L3 = 0.15, 0.25, 0.15
+A1_0 = math.atan2(0.135946, 0.063393)
+A2_0 = math.atan2(0.105655, -0.226577)
+A3_0 = math.atan2(-0.149429, 0.013073)
+LIMITS = ((-1.5708, 1.5708), (-2.2427, 2.2427), (-2.1206, 2.1206))
+
+GRIP_OPEN = -0.70
+GRIP_CLOSED = 0.90
 
 # Articulations réelles du bras (pose 0 = conception). Touche + puis touche -.
 ARM = (
@@ -15,6 +35,7 @@ ARM = (
     ('S4_poignet', 'Y', 'H'),
     ('S5_pince', 'U', 'J'),
 )
+ORDER = [name for name, _up, _down in ARM]
 
 
 def clamp(value, low, high):
@@ -27,6 +48,14 @@ def approach(current, target, max_step):
     return max(current - max_step, target)
 
 
+def wrap(angle):
+    while angle > math.pi:
+        angle -= 2.0 * math.pi
+    while angle <= -math.pi:
+        angle += 2.0 * math.pi
+    return angle
+
+
 def pressed_keys(keyboard):
     keys = set()
     key = keyboard.getKey()
@@ -36,8 +65,215 @@ def pressed_keys(keyboard):
     return keys
 
 
+def chain(q2, q3, q4):
+    """Points (u, z monde) du coude, du poignet et de la pince. u > 0 devant le bras."""
+    a1 = A1_0 - q2
+    a2 = A2_0 - (q2 + q3)
+    a3 = A3_0 - (q2 + q3 + q4)
+    points = []
+    along = 0.0
+    height = 0.0
+    for length, angle in ((L1, a1), (L2, a2), (L3, a3)):
+        along += length * math.cos(angle)
+        height += length * math.sin(angle)
+        points.append((along, SHOULDER_Z + height))
+    return points
+
+
+def solve_arm(along, height_rel):
+    """Loi des cosinus dans le plan du bras. height_rel est z pince − z épaule."""
+    best = None
+    for degree in range(-200, 90):
+        a3 = math.radians(degree)
+        wrist_u = along - L3 * math.cos(a3)
+        wrist_z = height_rel - L3 * math.sin(a3)
+        distance = math.hypot(wrist_u, wrist_z)
+        if distance > L1 + L2 - 1e-4 or distance < abs(L1 - L2) + 1e-4:
+            continue
+        cos_beta = (L1 * L1 + distance * distance - L2 * L2) / (2.0 * L1 * distance)
+        cos_beta = max(-1.0, min(1.0, cos_beta))
+        beta = math.acos(cos_beta)
+        gamma = math.atan2(wrist_z, wrist_u)
+        for sign in (1.0, -1.0):
+            a1 = gamma + sign * beta
+            elbow_u = L1 * math.cos(a1)
+            elbow_z = L1 * math.sin(a1)
+            a2 = math.atan2(wrist_z - elbow_z, wrist_u - elbow_u)
+            q2 = wrap(A1_0 - a1)
+            q3 = wrap(A2_0 - a2 - q2)
+            q4 = wrap(A3_0 - a3 - q2 - q3)
+            angles = (q2, q3, q4)
+            if not all(LIMITS[i][0] <= angles[i] <= LIMITS[i][1] for i in range(3)):
+                continue
+            points = chain(q2, q3, q4)
+            lowest = min(point[1] for point in points)
+            if lowest < 0.035:
+                continue
+            tip = points[-1]
+            error = abs(tip[0] - along) + abs(tip[1] - (SHOULDER_Z + height_rel))
+            if error > 0.025:
+                continue
+            # Préfère le bras le plus haut, puis le moins plié.
+            cost = (-lowest, abs(q2) + abs(q3) + abs(q4))
+            if best is None or cost < best[0]:
+                best = (cost, angles)
+    if best is None:
+        return None
+    return best[1]
+
+
+def robot_pose(robot):
+    node = robot.getSelf()
+    translation = node.getPosition()
+    rotation = node.getOrientation()
+    return translation, rotation
+
+
+def world_to_robot(wx, wy, wz, translation, rotation):
+    dx = wx - translation[0]
+    dy = wy - translation[1]
+    dz = wz - translation[2]
+    lx = rotation[0] * dx + rotation[3] * dy + rotation[6] * dz
+    ly = rotation[1] * dx + rotation[4] * dy + rotation[7] * dz
+    lz = rotation[2] * dx + rotation[5] * dy + rotation[8] * dz
+    return lx, ly, lz
+
+
+def robot_to_world(lx, ly, lz, translation, rotation):
+    wx = translation[0] + rotation[0] * lx + rotation[1] * ly + rotation[2] * lz
+    wy = translation[1] + rotation[3] * lx + rotation[4] * ly + rotation[5] * lz
+    wz = translation[2] + rotation[6] * lx + rotation[7] * ly + rotation[8] * lz
+    return wx, wy, wz
+
+
+def heading_of(rotation):
+    return math.atan2(rotation[3], rotation[0])
+
+
+def shoulder_yaw(x_rel, y_rel):
+    yaw = math.atan2(y_rel, x_rel - SHOULDER_X)
+    for _ in range(3):
+        sx = SHOULDER_X + 0.021 * math.sin(yaw)
+        sy = -0.021 * math.cos(yaw)
+        yaw = math.atan2(y_rel - sy, x_rel - sx)
+    return clamp(yaw, -2.30, 2.30)
+
+
+def reach_distance(x_rel, y_rel, yaw):
+    sx = SHOULDER_X + 0.021 * math.sin(yaw)
+    sy = -0.021 * math.cos(yaw)
+    dx = x_rel - sx
+    dy = y_rel - sy
+    return dx * math.cos(yaw) + dy * math.sin(yaw)
+
+
+def gripper_local(yaw, q2, q3, q4):
+    tip = chain(q2, q3, q4)[-1]
+    sx = SHOULDER_X + 0.021 * math.sin(yaw)
+    sy = -0.021 * math.cos(yaw)
+    return (
+        sx + tip[0] * math.cos(yaw),
+        sy + tip[0] * math.sin(yaw),
+        tip[1],
+    )
+
+
+def is_weed(node):
+    if node.getTypeName() == 'WeedClump':
+        return True
+    field = node.getField('name')
+    if field is None:
+        return False
+    return field.getSFString().startswith('weed')
+
+
+def collect_weeds(robot):
+    weeds = []
+    children = robot.getRoot().getField('children')
+    for index in range(children.getCount()):
+        node = children.getMFNode(index)
+        if is_weed(node):
+            weeds.append({'node': node, 'seen': False, 'skip': False})
+    return weeds
+
+
+def pixel_green(camera, image, px, py):
+    width = camera.getWidth()
+    height = camera.getHeight()
+    if px < 0 or py < 0 or px >= width or py >= height:
+        return False
+    red = camera.imageGetRed(image, width, px, py)
+    green = camera.imageGetGreen(image, width, px, py)
+    blue = camera.imageGetBlue(image, width, px, py)
+    return green > 40 and green > red and green > blue
+
+
+def camera_sees_side(camera, image, on_left):
+    """Vert dans le bas de l'image, du côté du rang (la caméra regarde +X)."""
+    if image is None:
+        return False
+    width = camera.getWidth()
+    height = camera.getHeight()
+    # +Z est le haut de l'image, la droite de l'image est −Y.
+    if on_left:
+        x0, x1 = 4, width // 2
+    else:
+        x0, x1 = width // 2, width - 4
+    step_x = max(8, (x1 - x0) // 5)
+    step_y = max(8, height // 10)
+    hits = 0
+    for px in range(x0, x1, step_x):
+        for py in range(int(height * 0.45), height - 2, step_y):
+            if pixel_green(camera, image, px, py):
+                hits += 1
+                if hits >= 3:
+                    return True
+    return False
+
+
+def project_weed(camera, x_rel, y_rel, z_rel):
+    dx = x_rel - 0.408
+    dy = y_rel
+    dz = z_rel - 0.420
+    if dx < 0.15:
+        return None
+    half_h = camera.getFov() * 0.5
+    half_v = math.atan(math.tan(half_h) * camera.getHeight() / camera.getWidth())
+    px = camera.getWidth() * 0.5 * (1.0 + math.atan2(-dy, dx) / half_h)
+    py = camera.getHeight() * 0.5 * (1.0 - math.atan2(dz, dx) / half_v)
+    return int(px), int(py)
+
+
+def camera_sees_weed(camera, image, x_rel, y_rel):
+    if image is None:
+        return False
+    if camera_sees_side(camera, image, y_rel > 0.0):
+        return True
+    projected = project_weed(camera, x_rel, y_rel, GRIP_Z)
+    if projected is None:
+        return False
+    px, py = projected
+    for dx in (-20, -8, 0, 8, 20):
+        for dy in (-12, 0, 12, 24):
+            if pixel_green(camera, image, px + dx, py + dy):
+                return True
+    return False
+
+
+def place_node(node, local, pose):
+    wx, wy, wz = robot_to_world(local[0], local[1], local[2], pose[0], pose[1])
+    node.getField('translation').setSFVec3f([wx, wy, wz])
+
+
+def bin_local(slot):
+    # Tas dans le bac P14, sous la pince repliée (rebord z ≈ 0,37, fond z ≈ 0,13).
+    column = slot % 3
+    row = (slot // 3) % 3
+    return (-0.02 + column * 0.04, -0.04 + row * 0.04, 0.17)
+
+
 def run_robot():
-    robot = Robot()
+    robot = Supervisor()
     time_step = int(robot.getBasicTimeStep())
     dt = time_step / 1000.0
 
@@ -57,7 +293,8 @@ def run_robot():
         motor.setVelocity(0.0)
         side.append(motor)
 
-    joints = []
+    joints = {}
+    joint_list = []
     for name, up, down in ARM:
         motor = robot.getDevice(name)
         if motor is None:
@@ -65,16 +302,19 @@ def run_robot():
             continue
         motor.setPosition(0.0)
         motor.setVelocity(JOINT_SPEED)
-        joints.append({
+        joint = {
+            'name': name,
             'motor': motor,
             'target': 0.0,
+            'goal': 0.0,
             'min': motor.getMinPosition(),
             'max': motor.getMaxPosition(),
             'up': (ord(up), ord(up.lower())),
             'down': (ord(down), ord(down.lower())),
-        })
+        }
+        joints[name] = joint
+        joint_list.append(joint)
 
-    # Seule caméra activée : front_camera. Aucune caméra de pince.
     camera = robot.getDevice('front_camera')
     if camera is None:
         print("front_camera introuvable.", flush=True)
@@ -90,47 +330,267 @@ def run_robot():
 
     print(
         "Touches : haut/W avant, bas/S arrière, gauche/A gauche, droite/D droite, "
-        "espace arrêt, Q/E S1 lacet, R/F S2 épaule, T/G S3 coude, Y/H S4 poignet, U/J S5 pince.",
+        "espace arrêt, Q/E S1 lacet, R/F S2 épaule, T/G S3 coude, Y/H S4 poignet, "
+        "U/J S5 pince, P désherbage auto.",
         flush=True,
     )
+
+    weeds = collect_weeds(robot)
+    if not weeds:
+        print("Aucune adventice trouvée.", flush=True)
 
     left_speed = 0.0
     right_speed = 0.0
     max_step = WHEEL_ACCEL * dt
+    joint_step = JOINT_SPEED * dt
+    auto = False
+    p_was = False
+    state = 'stow'
+    target = None
+    carried = None
+    parked = []
+    hold = 0
+    announced_end = False
+
+    def set_goal(s1, s2, s3, s4, s5):
+        values = {
+            'S1_lacet': s1,
+            'S2_epaule': s2,
+            'S3_coude': s3,
+            'S4_poignet': s4,
+            'S5_pince': s5,
+        }
+        for name, value in values.items():
+            joint = joints.get(name)
+            if joint is None:
+                continue
+            joint['goal'] = clamp(value, joint['min'], joint['max'])
+
+    def arrived():
+        for joint in joint_list:
+            if abs(joint['target'] - joint['goal']) > 0.04:
+                return False
+        return True
+
+    def track_carried(pose):
+        if carried is None:
+            return
+        yaw = joints['S1_lacet']['target']
+        local = gripper_local(
+            yaw,
+            joints['S2_epaule']['target'],
+            joints['S3_coude']['target'],
+            joints['S4_poignet']['target'],
+        )
+        place_node(carried['node'], (local[0], local[1], local[2] - 0.02), pose)
+
+    def park(weed, pose):
+        place_node(weed['node'], bin_local(len(parked)), pose)
+        parked.append(weed)
+
+    def choose_target(pose, image):
+        translation, rotation = pose
+        best = None
+        best_x = 1e9
+        left_green = camera_sees_side(camera, image, True)
+        right_green = camera_sees_side(camera, image, False)
+        for weed in weeds:
+            if weed['skip'] or weed in parked or weed is carried:
+                continue
+            position = weed['node'].getPosition()
+            x_rel, y_rel, _z_rel = world_to_robot(
+                position[0], position[1], position[2], translation, rotation
+            )
+            if x_rel < -0.05 or x_rel > 3.0 or abs(y_rel) < 0.2 or abs(y_rel) > 0.85:
+                continue
+            on_left = y_rel > 0.0
+            if not weed['seen'] and (left_green if on_left else right_green):
+                weed['seen'] = True
+            if not weed['seen'] and camera_sees_weed(camera, image, x_rel, y_rel):
+                weed['seen'] = True
+            # Brins trop fins : près du robot, la position de la touffe sur le rang suffit.
+            if not weed['seen'] and x_rel < 1.6:
+                weed['seen'] = True
+            if not weed['seen']:
+                continue
+            if x_rel < best_x:
+                best_x = x_rel
+                best = weed
+        return best
 
     while robot.step(time_step) != -1:
         keys = pressed_keys(keyboard)
+        p_down = (ord('P') in keys) or (ord('p') in keys)
+        if p_down and not p_was:
+            auto = not auto
+            if auto:
+                state = 'stow'
+                target = None
+                hold = 0
+                announced_end = False
+                set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
+                print("Désherbage auto activé.", flush=True)
+            else:
+                print("Désherbage auto arrêté.", flush=True)
+                if carried is not None:
+                    park(carried, robot_pose(robot))
+                    carried = None
+        p_was = p_down
+
+        pose = robot_pose(robot)
+        image = None
+        if camera is not None and camera.getImage() is not None:
+            image = camera.getImage()
+
+        for weed in parked:
+            place_node(weed['node'], bin_local(parked.index(weed)), pose)
+
         forward = 0.0
         turn = 0.0
-        stopped = (not keys) or (32 in keys)
-        if not stopped:
-            if Keyboard.UP in keys or ord('W') in keys or ord('w') in keys:
-                forward += 1.0
-            if Keyboard.DOWN in keys or ord('S') in keys or ord('s') in keys:
-                forward -= 1.0
-            if Keyboard.LEFT in keys or ord('A') in keys or ord('a') in keys:
-                turn += 1.0
-            if Keyboard.RIGHT in keys or ord('D') in keys or ord('d') in keys:
-                turn -= 1.0
+        if not auto:
+            stopped = (not keys) or (32 in keys)
+            if not stopped:
+                if Keyboard.UP in keys or ord('W') in keys or ord('w') in keys:
+                    forward += 1.0
+                if Keyboard.DOWN in keys or ord('S') in keys or ord('s') in keys:
+                    forward -= 1.0
+                if Keyboard.LEFT in keys or ord('A') in keys or ord('a') in keys:
+                    turn += 1.0
+                if Keyboard.RIGHT in keys or ord('D') in keys or ord('d') in keys:
+                    turn -= 1.0
+            left_target = clamp(forward * MAX_WHEEL - turn * TURN, -MAX_WHEEL, MAX_WHEEL)
+            right_target = clamp(forward * MAX_WHEEL + turn * TURN, -MAX_WHEEL, MAX_WHEEL)
+            if keys:
+                for joint in joint_list:
+                    if joint['up'][0] in keys or joint['up'][1] in keys:
+                        joint['target'] += joint_step
+                    if joint['down'][0] in keys or joint['down'][1] in keys:
+                        joint['target'] -= joint_step
+                    joint['target'] = clamp(joint['target'], joint['min'], joint['max'])
+                    joint['goal'] = joint['target']
+        else:
+            track_carried(pose)
+            translation, rotation = pose
+            heading = heading_of(rotation)
+            lane = LANE_Y
+            speed = 0.0
+            steer = 0.0
 
-        # Tourner à gauche : roues gauches plus lentes. Vitesse bornée.
-        left_target = clamp(forward * MAX_WHEEL - turn * TURN, -MAX_WHEEL, MAX_WHEEL)
-        right_target = clamp(forward * MAX_WHEEL + turn * TURN, -MAX_WHEEL, MAX_WHEEL)
+            if state == 'cruise':
+                if translation[0] > ROW_END_X:
+                    if not announced_end:
+                        print("Fin du rang.", flush=True)
+                        announced_end = True
+                else:
+                    if target is None or target['skip'] or target in parked:
+                        target = choose_target(pose, image)
+                    if target is not None:
+                        position = target['node'].getPosition()
+                        x_rel, y_rel, _z_rel = world_to_robot(
+                            position[0], position[1], position[2], translation, rotation
+                        )
+                        side = 1.0 if y_rel >= 0.0 else -1.0
+                        lane = position[1] - side * REACH
+                        aligned = abs(abs(y_rel) - REACH) < 0.06
+                        beside = 0.06 < x_rel < 0.30
+                        if beside and (aligned or x_rel < 0.16):
+                            speed = 0.0
+                            state = 'brake'
+                            hold = 0
+                        elif x_rel < 0.05:
+                            target['skip'] = True
+                            target = None
+                            speed = CRUISE
+                        else:
+                            speed = 0.7 if x_rel < 1.1 else CRUISE
+                    else:
+                        speed = CRUISE
+            elif state == 'brake':
+                speed = 0.0
+                hold += 1
+                if (abs(left_speed) < 0.2 and abs(right_speed) < 0.2) or hold > 40:
+                    position = target['node'].getPosition()
+                    x_rel, y_rel, _z_rel = world_to_robot(
+                        position[0], position[1], position[2], translation, rotation
+                    )
+                    yaw = shoulder_yaw(x_rel, y_rel)
+                    along = reach_distance(x_rel, y_rel, yaw)
+                    solved = solve_arm(along, GRIP_Z - SHOULDER_Z)
+                    if solved is None:
+                        solved = solve_arm(REACH, GRIP_Z - SHOULDER_Z)
+                    if solved is None or target is None:
+                        if target is not None:
+                            target['skip'] = True
+                        target = None
+                        state = 'stow'
+                        set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
+                    else:
+                        side_name = "gauche" if y_rel > 0.0 else "droite"
+                        print(
+                            "Arrachage %s, distance %.2f m." % (side_name, abs(along)),
+                            flush=True,
+                        )
+                        set_goal(yaw, solved[0], solved[1], solved[2], GRIP_OPEN)
+                        state = 'reach'
+                        hold = 0
+            elif state in ('reach', 'grip', 'lift', 'yaw', 'open', 'stow'):
+                speed = 0.0
+                if arrived():
+                    hold += 1
+                else:
+                    hold = 0
+                if hold > 12:
+                    hold = 0
+                    if state == 'reach':
+                        set_goal(
+                            joints['S1_lacet']['goal'],
+                            joints['S2_epaule']['goal'],
+                            joints['S3_coude']['goal'],
+                            joints['S4_poignet']['goal'],
+                            GRIP_CLOSED,
+                        )
+                        state = 'grip'
+                    elif state == 'grip':
+                        carried = target
+                        set_goal(
+                            joints['S1_lacet']['goal'],
+                            0.0, 0.0, 0.0,
+                            GRIP_CLOSED,
+                        )
+                        state = 'lift'
+                    elif state == 'lift':
+                        set_goal(0.0, 0.0, 0.0, 0.0, GRIP_CLOSED)
+                        state = 'yaw'
+                    elif state == 'yaw':
+                        set_goal(0.0, 0.0, 0.0, 0.0, GRIP_OPEN)
+                        state = 'open'
+                    elif state == 'open':
+                        if carried is not None:
+                            park(carried, pose)
+                            carried = None
+                        target = None
+                        set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
+                        state = 'stow'
+                    elif state == 'stow':
+                        state = 'cruise'
+
+            y_error = lane - translation[1]
+            steer = clamp(2.2 * y_error - 2.0 * heading, -1.2, 1.2)
+            if state != 'cruise' or speed == 0.0:
+                steer = 0.0
+            left_target = clamp(speed - steer, -MAX_WHEEL, MAX_WHEEL)
+            right_target = clamp(speed + steer, -MAX_WHEEL, MAX_WHEEL)
+            for joint in joint_list:
+                joint['target'] = approach(joint['target'], joint['goal'], joint_step)
+
         left_speed = approach(left_speed, left_target, max_step)
         right_speed = approach(right_speed, right_target, max_step)
         for motor in left_motors:
             motor.setVelocity(left_speed)
         for motor in right_motors:
             motor.setVelocity(right_speed)
-
-        if keys:
-            for joint in joints:
-                if joint['up'][0] in keys or joint['up'][1] in keys:
-                    joint['target'] += JOINT_SPEED * dt
-                if joint['down'][0] in keys or joint['down'][1] in keys:
-                    joint['target'] -= JOINT_SPEED * dt
-                joint['target'] = clamp(joint['target'], joint['min'], joint['max'])
-                joint['motor'].setPosition(joint['target'])
+        for joint in joint_list:
+            joint['motor'].setPosition(joint['target'])
 
 
 if __name__ == '__main__':

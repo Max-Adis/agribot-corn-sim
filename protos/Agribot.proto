@@ -15,6 +15,8 @@ PROTO Agribot [
     rotation IS rotation
     name IS name
     controller IS controller
+    # Le bac P14 est déjà dans robot_static.stl (arrière, x -0,46..0,11 m).
+    supervisor TRUE
     children [
       # Maillage CAO : x -0,462..0,420  y ±0,231  z 0,058..0,500 m
       Transform {
