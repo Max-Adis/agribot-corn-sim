@@ -230,6 +230,155 @@ def gripper_local(yaw, q2, q3, q4):
     )
 
 
+# Boîte du proto : translation -0.018 0 0.255, size 0.84 0.43 0.29.
+# Bas z=0.110, haut des roues z=0.165 (commentaire du proto).
+CHASSIS_LO = (-0.438, -0.215, 0.110)
+CHASSIS_HI = (0.402, 0.215, 0.400)
+# Bac P14, arrière du maillage : x -0.46..0.11, rebord z≈0.37, fond z≈0.13.
+BIN_LO = (-0.460, -0.215, 0.130)
+BIN_HI = (0.110, 0.215, 0.370)
+# Creux du bac, ouvert vers le haut. Le bec replié y reste ; les parois sont interdites.
+BIN_OPEN_LO = (-0.425, -0.175, 0.165)
+BIN_OPEN_HI = (0.070, 0.175, 0.500)
+WHEEL_XY = ((0.30, 0.24), (0.30, -0.24), (-0.30, 0.24), (-0.30, -0.24))
+WHEEL_R = 0.0825
+WHEEL_HALF_W = 0.016
+WHEEL_Z = 0.0825
+# Mât avant (lidar 0.342, caméra 0.408) dans le devant de la boîte châssis.
+MAST_X = 0.280
+MAST_Y = 0.170
+MAST_Z = 0.520
+# Coude levé avant tout lacet : le bec passe au-dessus du châssis (z>0.40).
+CLEAR_Q3 = 1.05
+PATH_SAMPLES = 5
+LINK_GAP = 0.02
+
+
+def _lerp(a, b, t):
+    return tuple(a[i] + (b[i] - a[i]) * t for i in range(len(a)))
+
+
+def arm_points(yaw, q2, q3, q4):
+    """Épaule, coude, poignet, bec dans le repère du robot."""
+    a1 = A1_0 - q2
+    a2 = A2_0 - (q2 + q3)
+    a3 = A3_0 - q2 - q3 + q4
+    sx = SHOULDER_X - SHOULDER_Y * math.sin(yaw)
+    sy = SHOULDER_Y * math.cos(yaw)
+    shoulder = (sx, sy, SHOULDER_Z)
+    points = [shoulder]
+    along = 0.0
+    height = 0.0
+    for length, angle, y_off in ((L1, a1, 0.0), (L2, a2, -0.0275), (L3 + TIP, a3, TIP_Y)):
+        along += length * math.cos(angle)
+        height += length * math.sin(angle)
+        points.append((
+            sx + along * math.cos(yaw) - y_off * math.sin(yaw),
+            sy + along * math.sin(yaw) + y_off * math.cos(yaw),
+            SHOULDER_Z + height,
+        ))
+    return points
+
+
+def _in_aabb(point, low, high):
+    return all(low[i] <= point[i] <= high[i] for i in range(3))
+
+
+def _in_wheel(point):
+    x, y, z = point
+    for cx, cy in WHEEL_XY:
+        if abs(y - cy) <= WHEEL_HALF_W and math.hypot(x - cx, z - WHEEL_Z) <= WHEEL_R:
+            return True
+        if math.hypot(x - cx, y - cy) < WHEEL_R + 0.015 and z < WHEEL_Z + WHEEL_R:
+            return True
+    return False
+
+
+def _in_bin_wall(point):
+    if not _in_aabb(point, BIN_LO, BIN_HI):
+        return False
+    return not _in_aabb(point, BIN_OPEN_LO, BIN_OPEN_HI)
+
+
+def _in_chassis_solid(point):
+    """Dalle et mât avant de la boîte châssis. Le vide autour de l'épaule n'est pas un mur."""
+    x, y, z = point
+    if not (CHASSIS_LO[0] <= x <= CHASSIS_HI[0] and abs(y) <= CHASSIS_HI[1]):
+        return False
+    if CHASSIS_LO[2] <= z <= WHEEL_Z + WHEEL_R:
+        return True
+    if x >= MAST_X and abs(y) <= MAST_Y and WHEEL_Z + WHEEL_R <= z <= MAST_Z:
+        return True
+    return False
+
+
+def _links_cross(points):
+    shoulder, elbow, wrist, beak = points
+    for i in range(6):
+        t = i / 5.0
+        p = _lerp(shoulder, elbow, t)
+        for j in range(6):
+            s = j / 5.0
+            if math.dist(p, _lerp(wrist, beak, s)) < LINK_GAP:
+                return True
+    return False
+
+
+def pose_hits(yaw, q2, q3, q4):
+    """Un segment (épaule, coude, poignet, bec) dans le châssis, une roue ou le bac."""
+    points = arm_points(yaw, q2, q3, q4)
+    shoulder = points[0]
+    if _links_cross(points):
+        return True
+    for index in range(3):
+        for step in range(PATH_SAMPLES):
+            t = step / (PATH_SAMPLES - 1)
+            point = _lerp(points[index], points[index + 1], t)
+            if math.dist(point, shoulder) < 0.06:
+                continue
+            if _in_wheel(point) or _in_bin_wall(point) or _in_chassis_solid(point):
+                return True
+    return False
+
+
+def _yaw_too_low(yaw, q2, q3, q4):
+    points = arm_points(yaw, q2, q3, q4)
+    return points[1][2] < 0.30 or points[3][2] <= CHASSIS_HI[2]
+
+
+def move_hits(start, end):
+    """Échantillons le long du mouvement d'articulations. Jamais de lacet bras bas."""
+    yaw_moves = abs(start[0] - end[0]) > 0.12
+    for step in range(PATH_SAMPLES):
+        pose = _lerp(start, end, step / (PATH_SAMPLES - 1))
+        if pose_hits(*pose):
+            return True
+        if yaw_moves and _yaw_too_low(*pose):
+            return True
+    return False
+
+
+def gesture_hits(current, yaw, solved):
+    """Levée du coude, lacet en haut, descente, retour au bac, repli."""
+    raised_here = (current[0], 0.0, CLEAR_Q3, 0.0)
+    raised_side = (yaw, 0.0, CLEAR_Q3, 0.0)
+    grasp = (yaw, solved[0], solved[1], solved[2])
+    raised_bin = (0.0, 0.0, CLEAR_Q3, 0.0)
+    home = (0.0, 0.0, 0.0, 0.0)
+    # La prise elle-même doit laisser le bec hors de la boîte. Sinon la touffe
+    # n'est atteignable qu'en traversant le robot.
+    if _in_aabb(arm_points(*grasp)[3], CHASSIS_LO, CHASSIS_HI):
+        return True
+    waypoints = (current, raised_here, raised_side, grasp, raised_side, raised_bin, home)
+    for pose in waypoints[1:]:
+        if pose_hits(*pose):
+            return True
+    for start, end in zip(waypoints, waypoints[1:]):
+        if move_hits(start, end):
+            return True
+    return False
+
+
 def is_weed(node):
     if node.getTypeName() == 'WeedClump':
         return True
@@ -400,6 +549,7 @@ def run_robot():
     state = 'stow'
     target = None
     carried = None
+    grasp = None
     parked = []
     hold = 0
     announced_end = False
@@ -478,6 +628,7 @@ def run_robot():
             if auto:
                 state = 'stow'
                 target = None
+                grasp = None
                 hold = 0
                 announced_end = False
                 set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
@@ -577,20 +728,35 @@ def run_robot():
                         if miss > 0.05:
                             solved = None
                             
+                    blocked = False
+                    if solved is not None:
+                        current = (
+                            joints['S1_lacet']['target'],
+                            joints['S2_epaule']['target'],
+                            joints['S3_coude']['target'],
+                            joints['S4_poignet']['target'],
+                        )
+                        if gesture_hits(current, yaw, solved):
+                            solved = None
+                            blocked = True
                     if solved is None:
                         target['skip'] = True
                         target = None
                         state = 'cruise'
+                        if blocked:
+                            print("Trajectoire dans le robot, adventice ignorée.", flush=True)
                     else:
                         side_name = "gauche" if y_rel > 0.0 else "droite"
                         print(
                             "Arrachage %s, distance %.2f m." % (side_name, abs(along)),
                             flush=True,
                         )
-                        set_goal(yaw, solved[0], solved[1], solved[2], GRIP_OPEN)
-                        state = 'reach'
+                        grasp = (yaw, solved[0], solved[1], solved[2])
+                        # Coude levé avant le lacet : pas de bras bas qui balaie le châssis.
+                        set_goal(joints['S1_lacet']['target'], 0.0, CLEAR_Q3, 0.0, GRIP_OPEN)
+                        state = 'raise'
                         hold = 0
-            elif state in ('reach', 'grip', 'lift', 'yaw', 'open', 'stow'):
+            elif state in ('raise', 'slew', 'reach', 'grip', 'lift', 'transfer', 'open', 'stow'):
                 speed = 0.0
                 if arrived():
                     hold += 1
@@ -598,7 +764,13 @@ def run_robot():
                     hold = 0
                 if hold > 12:
                     hold = 0
-                    if state == 'reach':
+                    if state == 'raise':
+                        set_goal(grasp[0], 0.0, CLEAR_Q3, 0.0, GRIP_OPEN)
+                        state = 'slew'
+                    elif state == 'slew':
+                        set_goal(grasp[0], grasp[1], grasp[2], grasp[3], GRIP_OPEN)
+                        state = 'reach'
+                    elif state == 'reach':
                         set_goal(
                             joints['S1_lacet']['goal'],
                             joints['S2_epaule']['goal'],
@@ -609,23 +781,20 @@ def run_robot():
                         state = 'grip'
                     elif state == 'grip':
                         carried = target
-                        set_goal(
-                            joints['S1_lacet']['goal'],
-                            0.0, 0.0, 0.0,
-                            GRIP_CLOSED,
-                        )
+                        set_goal(grasp[0], 0.0, CLEAR_Q3, 0.0, GRIP_CLOSED)
                         state = 'lift'
                     elif state == 'lift':
-                        set_goal(0.0, 0.0, 0.0, 0.0, GRIP_CLOSED)
-                        state = 'yaw'
-                    elif state == 'yaw':
-                        set_goal(0.0, 0.0, 0.0, 0.0, GRIP_OPEN)
+                        set_goal(0.0, 0.0, CLEAR_Q3, 0.0, GRIP_CLOSED)
+                        state = 'transfer'
+                    elif state == 'transfer':
+                        set_goal(0.0, 0.0, CLEAR_Q3, 0.0, GRIP_OPEN)
                         state = 'open'
                     elif state == 'open':
                         if carried is not None:
                             park(carried, pose)
                             carried = None
                         target = None
+                        grasp = None
                         set_goal(0.0, 0.0, 0.0, 0.0, 0.0)
                         state = 'stow'
                     elif state == 'stow':
