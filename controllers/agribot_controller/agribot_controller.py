@@ -5,7 +5,16 @@ from controller import Keyboard, Robot
 MAX_WHEEL = 4.8
 TURN = 3.6
 WHEEL_ACCEL = 12.0
-GRIPPER_SPEED = 0.8
+JOINT_SPEED = 0.7
+
+# Articulations réelles du bras (pose 0 = conception). Touche + puis touche -.
+ARM = (
+    ('S1_lacet', 'Q', 'E'),
+    ('S2_epaule', 'R', 'F'),
+    ('S3_coude', 'T', 'G'),
+    ('S4_poignet', 'Y', 'H'),
+    ('S5_pince', 'U', 'J'),
+)
 
 
 def clamp(value, low, high):
@@ -48,17 +57,22 @@ def run_robot():
         motor.setVelocity(0.0)
         side.append(motor)
 
-    gripper = robot.getDevice('gripper_yaw')
-    grip_target = 0.0
-    grip_min = -1.25
-    grip_max = 1.25
-    if gripper is None:
-        print("Moteur de pince introuvable.", flush=True)
-    else:
-        grip_min = gripper.getMinPosition()
-        grip_max = gripper.getMaxPosition()
-        gripper.setPosition(grip_target)
-        gripper.setVelocity(GRIPPER_SPEED)
+    joints = []
+    for name, up, down in ARM:
+        motor = robot.getDevice(name)
+        if motor is None:
+            print("Moteur de bras introuvable : %s" % name, flush=True)
+            continue
+        motor.setPosition(0.0)
+        motor.setVelocity(JOINT_SPEED)
+        joints.append({
+            'motor': motor,
+            'target': 0.0,
+            'min': motor.getMinPosition(),
+            'max': motor.getMaxPosition(),
+            'up': (ord(up), ord(up.lower())),
+            'down': (ord(down), ord(down.lower())),
+        })
 
     # Seule caméra activée : front_camera. Aucune caméra de pince.
     camera = robot.getDevice('front_camera')
@@ -76,7 +90,7 @@ def run_robot():
 
     print(
         "Touches : haut/W avant, bas/S arrière, gauche/A gauche, droite/D droite, "
-        "espace arrêt, Q pince à gauche, E pince à droite.",
+        "espace arrêt, Q/E S1 lacet, R/F S2 épaule, T/G S3 coude, Y/H S4 poignet, U/J S5 pince.",
         flush=True,
     )
 
@@ -109,13 +123,14 @@ def run_robot():
         for motor in right_motors:
             motor.setVelocity(right_speed)
 
-        if gripper is not None and keys:
-            if ord('Q') in keys or ord('q') in keys:
-                grip_target += GRIPPER_SPEED * dt
-            if ord('E') in keys or ord('e') in keys:
-                grip_target -= GRIPPER_SPEED * dt
-            grip_target = clamp(grip_target, grip_min, grip_max)
-            gripper.setPosition(grip_target)
+        if keys:
+            for joint in joints:
+                if joint['up'][0] in keys or joint['up'][1] in keys:
+                    joint['target'] += JOINT_SPEED * dt
+                if joint['down'][0] in keys or joint['down'][1] in keys:
+                    joint['target'] -= JOINT_SPEED * dt
+                joint['target'] = clamp(joint['target'], joint['min'], joint['max'])
+                joint['motor'].setPosition(joint['target'])
 
 
 if __name__ == '__main__':

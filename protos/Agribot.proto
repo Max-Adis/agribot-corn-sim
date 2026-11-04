@@ -47,88 +47,242 @@ PROTO Agribot [
         near 0.05
         far 30
       }
-      # Lacet de la pince (axe Z). Le châssis maillé reste fixe.
-      # Q / E : la pince balaie à gauche ou à droite au-dessus du rang.
+      # Bras réel v7 (CAO FreeCAD, mêmes pièces que le maillage Gazebo).
+      # S1 lacet Z, puis S2 épaule, S3 coude, S4 poignet, S5 mors : axes Y.
+      # Position 0 = pose de conception. Pas de boîte de collision : le bras
+      # est déjà dans le volume du châssis, la conduite ne change pas.
       HingeJoint {
         jointParameters HingeJointParameters {
           axis 0 0 1
-          anchor 0.42 0 0.20
-          dampingConstant 0.08
-          staticFriction 0.02
+          anchor 0.170 0 0.124
+          dampingConstant 0.15
+          staticFriction 0.05
         }
         device [
           RotationalMotor {
-            name "gripper_yaw"
-            minPosition -1.25
-            maxPosition 1.25
-            maxVelocity 1.0
-            maxTorque 1.2
-            acceleration 2.0
+            name "S1_lacet"
+            minPosition -2.3562
+            maxPosition 2.3562
+            maxVelocity 3
+            maxTorque 3.4
+            acceleration 8
             sound ""
           }
         ]
         endPoint Solid {
-          translation 0.42 0 0.20
-          name "gripper"
+          translation 0.170 0 0.124
+          name "S1_lacet_link"
           children [
-            Pose {
-              translation 0.22 0 0
+            Transform {
+              translation -0.170 0 -0.124
+              scale 0.001 0.001 0.001
               children [
                 Shape {
                   appearance PBRAppearance {
-                    baseColor 0.85 0.45 0.08
-                    roughness 0.4
-                    metalness 0.35
+                    baseColor 0.16 0.34 0.60
+                    roughness 0.45
+                    metalness 0.25
                   }
-                  geometry Box {
-                    size 0.40 0.02 0.018
+                  geometry Mesh {
+                    url [ "../meshes/link_s1.stl" ]
                   }
                 }
               ]
             }
-            Pose {
-              translation 0.44 0.016 0
-              children [
-                Shape {
-                  appearance PBRAppearance {
-                    baseColor 0.15 0.15 0.16
-                    roughness 0.35
-                    metalness 0.5
-                  }
-                  geometry Box {
-                    size 0.07 0.012 0.028
-                  }
+            HingeJoint {
+              jointParameters HingeJointParameters {
+                axis 0 1 0
+                anchor 0 -0.021 0.076
+                dampingConstant 0.2
+                staticFriction 0.08
+              }
+              device [
+                RotationalMotor {
+                  name "S2_epaule"
+                  minPosition -1.5708
+                  maxPosition 1.5708
+                  maxVelocity 2
+                  maxTorque 5.7
+                  acceleration 6
+                  sound ""
                 }
               ]
-            }
-            Pose {
-              translation 0.44 -0.016 0
-              children [
-                Shape {
-                  appearance PBRAppearance {
-                    baseColor 0.15 0.15 0.16
-                    roughness 0.35
-                    metalness 0.5
+              endPoint Solid {
+                translation 0 -0.021 0.076
+                name "S2_epaule_link"
+                children [
+                  Transform {
+                    translation -0.170 0.021 -0.200
+                    scale 0.001 0.001 0.001
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.16 0.34 0.60
+                          roughness 0.45
+                          metalness 0.25
+                        }
+                        geometry Mesh {
+                          url [ "../meshes/link_s2.stl" ]
+                        }
+                      }
+                    ]
                   }
-                  geometry Box {
-                    size 0.07 0.012 0.028
+                  HingeJoint {
+                    jointParameters HingeJointParameters {
+                      axis 0 1 0
+                      anchor 0.063393 0 0.135946
+                      dampingConstant 0.15
+                      staticFriction 0.05
+                    }
+                    device [
+                      RotationalMotor {
+                        name "S3_coude"
+                        minPosition -2.2427
+                        maxPosition 2.2427
+                        maxVelocity 2
+                        maxTorque 5.7
+                        acceleration 6
+                        sound ""
+                      }
+                    ]
+                    endPoint Solid {
+                      translation 0.063393 0 0.135946
+                      name "S3_coude_link"
+                      children [
+                        Transform {
+                          translation -0.233393 0.021 -0.335946
+                          scale 0.001 0.001 0.001
+                          children [
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.16 0.34 0.60
+                                roughness 0.45
+                                metalness 0.25
+                              }
+                              geometry Mesh {
+                                url [ "../meshes/link_s3.stl" ]
+                              }
+                            }
+                          ]
+                        }
+                        HingeJoint {
+                          jointParameters HingeJointParameters {
+                            axis 0 1 0
+                            anchor -0.226577 -0.0275 0.105655
+                            dampingConstant 0.08
+                            staticFriction 0.04
+                          }
+                          device [
+                            RotationalMotor {
+                              name "S4_poignet"
+                              minPosition -2.1206
+                              maxPosition 2.1206
+                              maxVelocity 2.5
+                              maxTorque 3.4
+                              acceleration 8
+                              sound ""
+                            }
+                          ]
+                          endPoint Solid {
+                            translation -0.226577 -0.0275 0.105655
+                            name "S4_poignet_link"
+                            children [
+                              Transform {
+                                translation -0.006816 0.0485 -0.441601
+                                scale 0.001 0.001 0.001
+                                children [
+                                  Shape {
+                                    appearance PBRAppearance {
+                                      baseColor 0.16 0.34 0.60
+                                      roughness 0.45
+                                      metalness 0.25
+                                    }
+                                    geometry Mesh {
+                                      url [ "../meshes/link_s4.stl" ]
+                                    }
+                                  }
+                                ]
+                              }
+                              HingeJoint {
+                                jointParameters HingeJointParameters {
+                                  axis 0 1 0
+                                  anchor 0.013073 -0.0045 -0.149429
+                                  dampingConstant 0.04
+                                  staticFriction 0.02
+                                }
+                                device [
+                                  RotationalMotor {
+                                    name "S5_pince"
+                                    minPosition -2.3562
+                                    maxPosition 2.3562
+                                    maxVelocity 3
+                                    maxTorque 3.4
+                                    acceleration 10
+                                    sound ""
+                                  }
+                                ]
+                                endPoint Solid {
+                                  translation 0.013073 -0.0045 -0.149429
+                                  name "S5_pince_link"
+                                  children [
+                                    Transform {
+                                      translation -0.019889 0.053 -0.292172
+                                      scale 0.001 0.001 0.001
+                                      children [
+                                        Shape {
+                                          appearance PBRAppearance {
+                                            baseColor 0.16 0.34 0.60
+                                            roughness 0.45
+                                            metalness 0.25
+                                          }
+                                          geometry Mesh {
+                                            url [ "../meshes/link_s5.stl" ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                  physics Physics {
+                                    density -1
+                                    mass 0.08
+                                    centerOfMass 0 0 0
+                                    inertiaMatrix [ 0.0004 0.0004 0.0002 0 0 0 ]
+                                  }
+                                }
+                              }
+                            ]
+                            physics Physics {
+                              density -1
+                              mass 0.22
+                              centerOfMass 0 0 0
+                              inertiaMatrix [ 0.0015 0.0015 0.0004 0 0 0 ]
+                            }
+                          }
+                        }
+                      ]
+                      physics Physics {
+                        density -1
+                        mass 0.28
+                        centerOfMass 0 0 0
+                        inertiaMatrix [ 0.004 0.004 0.0006 0 0 0 ]
+                      }
+                    }
                   }
+                ]
+                physics Physics {
+                  density -1
+                  mass 0.35
+                  centerOfMass 0 0 0
+                  inertiaMatrix [ 0.004 0.004 0.0008 0 0 0 ]
                 }
-              ]
+              }
             }
           ]
-          boundingObject Pose {
-            translation 0.03 0 0
-            children [
-              Box {
-                size 0.04 0.04 0.04
-              }
-            ]
-          }
           physics Physics {
             density -1
-            mass 0.08
-            centerOfMass 0.03 0 0
+            mass 0.4
+            centerOfMass 0 0 0
+            inertiaMatrix [ 0.004 0.004 0.002 0 0 0 ]
           }
         }
       }
