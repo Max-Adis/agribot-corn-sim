@@ -17,7 +17,8 @@ GRASP_Z = 0.04
 SHOULDER_X = 0.170
 SHOULDER_Y = -0.021
 SHOULDER_Z = 0.200
-LANE_Y = 0.0
+# Allée entre les rangs y=0 et y=0.85. y=0 est un rang, pas le passage.
+LANE_Y = 0.425
 ROW_END_X = 6.5
 
 # Longueurs XZ des translations Agribot.proto : S2→S3, S3→S4, S4→S5.
