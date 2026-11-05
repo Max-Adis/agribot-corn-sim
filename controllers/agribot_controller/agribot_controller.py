@@ -14,7 +14,7 @@ STANDOFF = 0.29
 # Arrêt où le poignet rabattu touche encore la touffe à moins de 5 cm.
 GRASP_X0 = 0.22
 GRASP_X1 = 0.26
-GRASP_Z = 0.14
+GRASP_Z = 0.04
 SHOULDER_X = 0.170
 SHOULDER_Y = -0.021
 SHOULDER_Z = 0.200
@@ -36,7 +36,7 @@ A3_0 = math.atan2(-0.149429, 0.013073)
 LIMITS = ((-1.5708, 1.5708), (-2.2427, 2.2427), (-2.1206, 2.1206))
 
 GRIP_OPEN = -0.70
-GRIP_CLOSED = 0.90
+GRIP_CLOSED = 0.00
 
 # Articulations réelles du bras (pose 0 = conception). Touche + puis touche -.
 ARM = (
