@@ -1,4 +1,8 @@
-"""Contrôleur Agribot v7 : téléopération clavier et désherbage autonome."""
+"""Contrôleur Agribot v9b : téléopération clavier et désherbage autonome.
+
+Géométrie alignée sur protos/Agribot.proto v9b (CAO AGRIBOT_v9b). Position 0 des
+servos = pose repos CAO, mêmes axes qu'en v7. Le réglage des gestes autonomes pour
+la pince v9b (tournée de 90°) reste à faire (étape 2 : validation des gestes)."""
 import math
 
 from controller import Keyboard, Supervisor
@@ -16,24 +20,28 @@ GRASP_X0 = 0.22
 GRASP_X1 = 0.26
 GRASP_Z = 0.04
 SHOULDER_X = 0.170
-SHOULDER_Y = -0.021
+# v9b : épaule sur l'axe de lacet.
+SHOULDER_Y = 0.0
 SHOULDER_Z = 0.200
 # Allée entre les rangs y=0 et y=0.85. y=0 est un rang, pas le passage.
 LANE_Y = 0.425
 ROW_END_X = 6.5
 
-# Longueurs XZ des translations Agribot.proto : S2→S3, S3→S4, S4→S5.
+# Longueurs XZ des translations Agribot.proto : S2→S3, S3→S4, S4→S5 (inchangées en v9b).
 L1 = math.hypot(0.063393, 0.135946)
 L2 = math.hypot(0.226577, 0.105655)
 L3 = math.hypot(0.013073, 0.149429)
 # Bec fixe au-delà de l'axe S5, le long du même segment (60 mm).
 TIP = 0.060
 # Décalage Y du bec par rapport à l'origine S2 (translations S4 puis S5).
-TIP_Y = -0.0275 - 0.0045
+# v9b : pince tournée de 90°, doigts à 58 mm de l'axe du bras.
+WRIST_Y = -0.031
+TIP_Y = WRIST_Y - 0.027
 A1_0 = math.atan2(0.135946, 0.063393)
 A2_0 = math.atan2(0.105655, -0.226577)
 A3_0 = math.atan2(-0.149429, 0.013073)
-LIMITS = ((-1.5708, 1.5708), (-2.2427, 2.2427), (-2.1206, 2.1206))
+# Butées S2, S3, S4 du proto v9b (neutre ±135°, HYPOTHÈSE non confirmée).
+LIMITS = ((-2.7925, 1.9199), (-0.7854, 3.9270), (-4.4506, 0.2618))
 
 GRIP_OPEN = -0.70
 GRIP_CLOSED = 0.00
@@ -230,24 +238,24 @@ def gripper_local(yaw, q2, q3, q4):
     )
 
 
-# Boîte du proto : translation -0.018 0 0.255, size 0.84 0.43 0.29.
-# Bas z=0.110, haut des roues z=0.165 (commentaire du proto).
-CHASSIS_LO = (-0.438, -0.215, 0.110)
-CHASSIS_HI = (0.402, 0.215, 0.400)
-# Bac P14, arrière du maillage : x -0.46..0.11, rebord z≈0.37, fond z≈0.13.
-BIN_LO = (-0.460, -0.215, 0.130)
-BIN_HI = (0.110, 0.215, 0.370)
-# Creux du bac, ouvert vers le haut. Le bec replié y reste ; les parois sont interdites.
-BIN_OPEN_LO = (-0.425, -0.175, 0.165)
-BIN_OPEN_HI = (0.070, 0.175, 0.500)
+# Enveloppe v9b : châssis + plateau x -0.462..0.4325, y ±0.220, dessous z=0.105,
+# haut de la cabine fermée z=0.400 (haut des roues z=0.165).
+CHASSIS_LO = (-0.462, -0.220, 0.105)
+CHASSIS_HI = (0.4325, 0.220, 0.400)
+# Bac P14 570x440x240 à plat : x -0.46..0.11, fond z≈0.13, rebord z=0.367.
+BIN_LO = (-0.460, -0.220, 0.127)
+BIN_HI = (0.110, 0.220, 0.367)
+# Creux du bac (parois 3 mm), ouvert vers le haut. Le bec replié y reste ; les parois sont interdites.
+BIN_OPEN_LO = (-0.455, -0.215, 0.133)
+BIN_OPEN_HI = (0.105, 0.215, 0.500)
 WHEEL_XY = ((0.30, 0.24), (0.30, -0.24), (-0.30, 0.24), (-0.30, -0.24))
 WHEEL_R = 0.0825
-WHEEL_HALF_W = 0.016
+WHEEL_HALF_W = 0.010
 WHEEL_Z = 0.0825
-# Mât avant (lidar 0.342, caméra 0.408) dans le devant de la boîte châssis.
-MAST_X = 0.280
-MAST_Y = 0.170
-MAST_Z = 0.520
+# Cabine fermée + capot (x 0.290..0.426, y ±0.150) et LiDAR jusqu'à z=0.500.
+MAST_X = 0.290
+MAST_Y = 0.150
+MAST_Z = 0.500
 # Coude levé avant tout lacet : le bec passe au-dessus du châssis (z>0.40).
 CLEAR_Q3 = 1.05
 PATH_SAMPLES = 5
@@ -269,7 +277,7 @@ def arm_points(yaw, q2, q3, q4):
     points = [shoulder]
     along = 0.0
     height = 0.0
-    for length, angle, y_off in ((L1, a1, 0.0), (L2, a2, -0.0275), (L3 + TIP, a3, TIP_Y)):
+    for length, angle, y_off in ((L1, a1, 0.0), (L2, a2, WRIST_Y), (L3 + TIP, a3, TIP_Y)):
         along += length * math.cos(angle)
         height += length * math.sin(angle)
         points.append((
@@ -432,10 +440,15 @@ def camera_sees_side(camera, image, on_left):
     return False
 
 
+# Caméra avant du proto v9b.
+CAMERA_X = 0.419
+CAMERA_Z = 0.420
+
+
 def project_weed(camera, x_rel, y_rel, z_rel):
-    dx = x_rel - 0.408
+    dx = x_rel - CAMERA_X
     dy = y_rel
-    dz = z_rel - 0.420
+    dz = z_rel - CAMERA_Z
     if dx < 0.15:
         return None
     half_h = camera.getFov() * 0.5
@@ -467,7 +480,7 @@ def place_node(node, local, pose):
 
 
 def bin_local(slot):
-    # Tas dans le bac P14, sous la pince repliée (rebord z ≈ 0,37, fond z ≈ 0,13).
+    # Tas dans le bac P14, sous la pince repliée (rebord z = 0,367, fond z ≈ 0,13).
     column = slot % 3
     row = (slot // 3) % 3
     return (-0.02 + column * 0.04, -0.04 + row * 0.04, 0.17)

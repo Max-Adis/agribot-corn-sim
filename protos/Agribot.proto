@@ -1,7 +1,14 @@
 #VRML_SIM R2025a utf8
-# Agribot v7. Cotes du xacro Gazebo (maillage FreeCAD en mm, échelle 0.001).
-# Voie 0,48 m, empattement 0,60 m, rayon de roue 0,0825 m.
-# Le cylindre Webots est aligné sur Z : la collision de roue est tournée sur Y.
+# Agribot v9b (CAO FreeCAD AGRIBOT_v9b, 4 nov. 2026). Hors tout 895 x 500 x 500 mm.
+# Châssis 2020 + plateau 882x440, roues Ø165 x 20 à l'extérieur (voie 480, empattement 600),
+# cabine électronique fermée à l'avant + capot (hayon) fermé, bac 570x440x240 à plat,
+# bras L1 150 / L2 250 / L3 150 + bec 60, épaule X170 Z200, pince tournée de 90° (fixe)
+# autour de L3 : doigts vers le sol en pose sol, fermeture latérale.
+# Maillages : tools/export_arm_links.py (STL de livraison v9b, mm, échelle 0.001).
+# Position 0 de tous les servos = pose repos CAO (lacet 180, épaule 115, coude -90, poignet -120),
+# avec les mêmes axes que la v7 : S1 +Z, S2 +Y, S3 +Y, S4 -Y.
+# Pose sol CAO (270 / 26.83 / -36.9 / -79.93) = S1 1.5708, S2 -1.5389, S3 0.9268, S4 -0.6994.
+# Masse totale ≈ 16.1 kg (dont achats estimés, voir tools/v9b_mass_report.json).
 
 PROTO Agribot [
   field SFVec3f    translation 0 0 0
@@ -15,32 +22,69 @@ PROTO Agribot [
     rotation IS rotation
     name IS name
     controller IS controller
-    # Le bac P14 est déjà dans robot_static.stl (arrière, x -0,46..0,11 m).
     supervisor TRUE
     selfCollision TRUE
     children [
-      # Maillage CAO : x -0,462..0,420  y ±0,231  z 0,058..0,500 m
+      # Corps fixe (pose repos) : alu, cabine blanche, PETG, bac, électronique / moteurs.
       Transform {
         scale 0.001 0.001 0.001
         children [
           Shape {
             appearance PBRAppearance {
-              baseColor 0.16 0.34 0.60
-              roughness 0.45
-              metalness 0.25
+              baseColor 0.75 0.77 0.80
+              roughness 0.35
+              metalness 0.6
             }
             geometry Mesh {
-              url [ "../meshes/robot_static.stl" ]
+              url [ "../meshes/body_alu.stl" ]
+            }
+          }
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.96 0.96 0.95
+              roughness 0.5
+              metalness 0.0
+            }
+            geometry Mesh {
+              url [ "../meshes/body_white.stl" ]
+            }
+          }
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.45 0.80 0.45
+              roughness 0.6
+              metalness 0.0
+            }
+            geometry Mesh {
+              url [ "../meshes/body_print.stl" ]
+            }
+          }
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.40 0.62 0.92
+              roughness 0.6
+              metalness 0.0
+            }
+            geometry Mesh {
+              url [ "../meshes/body_bin.stl" ]
+            }
+          }
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.22 0.22 0.25
+              roughness 0.5
+              metalness 0.2
+            }
+            geometry Mesh {
+              url [ "../meshes/body_dark.stl" ]
             }
           }
         ]
       }
       # R2025a ENU : l'image suit le +X local, le +Z local est le haut de l'image.
-      # Rotation nulle : regard vers +X (l'allée), horizon horizontal.
-      # 0 1 0 1.5708 enverrait ce +X vers le bas, sur la pince.
-      # Pas d'autre Camera : la fenêtre robot n'a que front_camera.
+      # Caméra avant E12 (x 397..418, z 406..434), devant le support P13.
       Camera {
-        translation 0.408 0 0.420
+        translation 0.419 0 0.420
         rotation 0 0 1 0
         name "front_camera"
         description "Caméra avant"
@@ -50,249 +94,10 @@ PROTO Agribot [
         near 0.05
         far 30
       }
-      # Bras réel v7 (CAO FreeCAD, mêmes pièces que le maillage Gazebo).
-      # S1 lacet Z, puis S2 épaule, S3 coude, S4 poignet, S5 mors : axes Y.
-      # Position 0 = pose de conception. Pas de boîte de collision : le bras
-      # est déjà dans le volume du châssis, la conduite ne change pas.
-      HingeJoint {
-        jointParameters HingeJointParameters {
-          axis 0 0 1
-          anchor 0.170 0 0.124
-          dampingConstant 0.15
-          staticFriction 0.05
-        }
-        device [
-          RotationalMotor {
-            name "S1_lacet"
-            minPosition -2.3562
-            maxPosition 2.3562
-            maxVelocity 3
-            maxTorque 3.4
-            acceleration 8
-            sound ""
-          }
-        ]
-        endPoint Solid {
-          translation 0.170 0 0.124
-          name "S1_lacet_link"
-          children [
-            Transform {
-              translation -0.170 0 -0.124
-              scale 0.001 0.001 0.001
-              children [
-                Shape {
-                  appearance PBRAppearance {
-                    baseColor 0.16 0.34 0.60
-                    roughness 0.45
-                    metalness 0.25
-                  }
-                  geometry Mesh {
-                    url [ "../meshes/link_s1.stl" ]
-                  }
-                }
-              ]
-            }
-            HingeJoint {
-              jointParameters HingeJointParameters {
-                axis 0 1 0
-                anchor 0 -0.021 0.076
-                dampingConstant 0.2
-                staticFriction 0.08
-              }
-              device [
-                RotationalMotor {
-                  name "S2_epaule"
-                  minPosition -1.5708
-                  maxPosition 1.5708
-                  maxVelocity 2
-                  maxTorque 5.7
-                  acceleration 6
-                  sound ""
-                }
-              ]
-              endPoint Solid {
-                translation 0 -0.021 0.076
-                name "S2_epaule_link"
-                children [
-                  Transform {
-                    translation -0.170 0.021 -0.200
-                    scale 0.001 0.001 0.001
-                    children [
-                      Shape {
-                        appearance PBRAppearance {
-                          baseColor 0.16 0.34 0.60
-                          roughness 0.45
-                          metalness 0.25
-                        }
-                        geometry Mesh {
-                          url [ "../meshes/link_s2.stl" ]
-                        }
-                      }
-                    ]
-                  }
-                  HingeJoint {
-                    jointParameters HingeJointParameters {
-                      axis 0 1 0
-                      anchor 0.063393 0 0.135946
-                      dampingConstant 0.15
-                      staticFriction 0.05
-                    }
-                    device [
-                      RotationalMotor {
-                        name "S3_coude"
-                        minPosition -2.2427
-                        maxPosition 2.2427
-                        maxVelocity 2
-                        maxTorque 5.7
-                        acceleration 6
-                        sound ""
-                      }
-                    ]
-                    endPoint Solid {
-                      translation 0.063393 0 0.135946
-                      name "S3_coude_link"
-                      children [
-                        Transform {
-                          translation -0.233393 0.021 -0.335946
-                          scale 0.001 0.001 0.001
-                          children [
-                            Shape {
-                              appearance PBRAppearance {
-                                baseColor 0.16 0.34 0.60
-                                roughness 0.45
-                                metalness 0.25
-                              }
-                              geometry Mesh {
-                                url [ "../meshes/link_s3.stl" ]
-                              }
-                            }
-                          ]
-                        }
-                        HingeJoint {
-                          jointParameters HingeJointParameters {
-                            # -Y : à +Y le poignet tournait à l'opposé de l'épaule et ne se rabattait pas.
-                            axis 0 -1 0
-                            anchor -0.226577 -0.0275 0.105655
-                            dampingConstant 0.08
-                            staticFriction 0.04
-                          }
-                          device [
-                            RotationalMotor {
-                              name "S4_poignet"
-                              minPosition -2.1206
-                              maxPosition 2.1206
-                              maxVelocity 2.5
-                              maxTorque 3.4
-                              acceleration 8
-                              sound ""
-                            }
-                          ]
-                          endPoint Solid {
-                            translation -0.226577 -0.0275 0.105655
-                            name "S4_poignet_link"
-                            children [
-                              Transform {
-                                translation -0.006816 0.0485 -0.441601
-                                scale 0.001 0.001 0.001
-                                children [
-                                  Shape {
-                                    appearance PBRAppearance {
-                                      baseColor 0.16 0.34 0.60
-                                      roughness 0.45
-                                      metalness 0.25
-                                    }
-                                    geometry Mesh {
-                                      url [ "../meshes/link_s4.stl" ]
-                                    }
-                                  }
-                                ]
-                              }
-                              HingeJoint {
-                                jointParameters HingeJointParameters {
-                                  axis 0 1 0
-                                  anchor 0.013073 -0.0045 -0.149429
-                                  dampingConstant 0.04
-                                  staticFriction 0.02
-                                }
-                                device [
-                                  RotationalMotor {
-                                    name "S5_pince"
-                                    minPosition -2.3562
-                                    maxPosition 2.3562
-                                    maxVelocity 3
-                                    maxTorque 3.4
-                                    acceleration 10
-                                    sound ""
-                                  }
-                                ]
-                                endPoint Solid {
-                                  translation 0.013073 -0.0045 -0.149429
-                                  name "S5_pince_link"
-                                  children [
-                                    Transform {
-                                      translation -0.019889 0.053 -0.292172
-                                      scale 0.001 0.001 0.001
-                                      children [
-                                        Shape {
-                                          appearance PBRAppearance {
-                                            baseColor 0.16 0.34 0.60
-                                            roughness 0.45
-                                            metalness 0.25
-                                          }
-                                          geometry Mesh {
-                                            url [ "../meshes/link_s5.stl" ]
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                  physics Physics {
-                                    density -1
-                                    mass 0.08
-                                    centerOfMass 0 0 0
-                                    inertiaMatrix [ 0.0004 0.0004 0.0002 0 0 0 ]
-                                  }
-                                }
-                              }
-                            ]
-                            physics Physics {
-                              density -1
-                              mass 0.22
-                              centerOfMass 0 0 0
-                              inertiaMatrix [ 0.0015 0.0015 0.0004 0 0 0 ]
-                            }
-                          }
-                        }
-                      ]
-                      physics Physics {
-                        density -1
-                        mass 0.28
-                        centerOfMass 0 0 0
-                        inertiaMatrix [ 0.004 0.004 0.0006 0 0 0 ]
-                      }
-                    }
-                  }
-                ]
-                physics Physics {
-                  density -1
-                  mass 0.35
-                  centerOfMass 0 0 0
-                  inertiaMatrix [ 0.004 0.004 0.0008 0 0 0 ]
-                }
-              }
-            }
-          ]
-          physics Physics {
-            density -1
-            mass 0.4
-            centerOfMass 0 0 0
-            inertiaMatrix [ 0.004 0.004 0.002 0 0 0 ]
-          }
-        }
-      }
+      # RPLIDAR A1M8 sur la rehausse P12 : axe x 355, plan de balayage z 483.8.
       # Balayage tournant autour de Y local. -90° sur X aligne cet axe sur -Z (plan horizontal, 360°).
       Lidar {
-        translation 0.342 0 0.472
+        translation 0.355 0 0.4838
         rotation 1 0 0 -1.5707963
         name "rplidar"
         horizontalResolution 720
@@ -304,10 +109,356 @@ PROTO Agribot [
         type "rotating"
         defaultFrequency 10
       }
+      # Bras v9b. Pas de boîte de collision sur le bras (comme en v7) : au repos la pince
+      # est dans le bac. Couples : DS3235 35 kg·cm = 3.43 N·m, RDS5160 60 kg·cm = 5.88 N·m.
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          # q1 = lacet CAO - 180°. Épaule sur l'axe de lacet (Y = 0 en v9b). Butées ±135° (HYPOTHÈSE).
+          axis 0 0 1
+          anchor 0.17 0 0.2
+          dampingConstant 0.15
+          staticFriction 0.05
+        }
+        device [
+          RotationalMotor {
+            name "S1_lacet"
+            minPosition -2.3562
+            maxPosition 2.3562
+            maxVelocity 3
+            maxTorque 3.43
+            acceleration 8
+            sound ""
+          }
+          PositionSensor {
+            name "S1_lacet_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.17 0 0.2
+          name "S1_lacet_link"
+          children [
+            Transform {
+              scale 0.001 0.001 0.001
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.45 0.80 0.45
+                    roughness 0.6
+                    metalness 0.0
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/link_s1_print.stl" ]
+                  }
+                }
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.22 0.22 0.25
+                    roughness 0.5
+                    metalness 0.2
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/link_s1_dark.stl" ]
+                  }
+                }
+              ]
+            }
+            HingeJoint {
+              jointParameters HingeJointParameters {
+                # q2 = épaule CAO - 115°. Butées = neutre 90° ±135° (HYPOTHÈSE non confirmée).
+                axis 0 1 0
+                anchor 0 0 0
+                dampingConstant 0.2
+                staticFriction 0.08
+              }
+              device [
+                RotationalMotor {
+                  name "S2_epaule"
+                  minPosition -2.7925
+                  maxPosition 1.9199
+                  maxVelocity 2
+                  maxTorque 5.88
+                  acceleration 6
+                  sound ""
+                }
+                PositionSensor {
+                  name "S2_epaule_sensor"
+                }
+              ]
+              endPoint Solid {
+                translation 0 0 0
+                name "S2_epaule_link"
+                children [
+                  Transform {
+                    scale 0.001 0.001 0.001
+                    children [
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.75 0.77 0.80
+                          roughness 0.35
+                          metalness 0.6
+                        }
+                        geometry Mesh {
+                          url [ "../meshes/link_s2_alu.stl" ]
+                        }
+                      }
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.45 0.80 0.45
+                          roughness 0.6
+                          metalness 0.0
+                        }
+                        geometry Mesh {
+                          url [ "../meshes/link_s2_print.stl" ]
+                        }
+                      }
+                      Shape {
+                        appearance PBRAppearance {
+                          baseColor 0.22 0.22 0.25
+                          roughness 0.5
+                          metalness 0.2
+                        }
+                        geometry Mesh {
+                          url [ "../meshes/link_s2_dark.stl" ]
+                        }
+                      }
+                    ]
+                  }
+                  HingeJoint {
+                    jointParameters HingeJointParameters {
+                      # q3 = coude CAO + 90°. Butées = neutre 0 ±135° (HYPOTHÈSE non confirmée).
+                      axis 0 1 0
+                      anchor 0.063393 0 0.135946
+                      dampingConstant 0.15
+                      staticFriction 0.05
+                    }
+                    device [
+                      RotationalMotor {
+                        name "S3_coude"
+                        minPosition -0.7854
+                        maxPosition 3.9270
+                        maxVelocity 2
+                        maxTorque 5.88
+                        acceleration 6
+                        sound ""
+                      }
+                      PositionSensor {
+                        name "S3_coude_sensor"
+                      }
+                    ]
+                    endPoint Solid {
+                      translation 0.063393 0 0.135946
+                      name "S3_coude_link"
+                      children [
+                        Transform {
+                          scale 0.001 0.001 0.001
+                          children [
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.75 0.77 0.80
+                                roughness 0.35
+                                metalness 0.6
+                              }
+                              geometry Mesh {
+                                url [ "../meshes/link_s3_alu.stl" ]
+                              }
+                            }
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.45 0.80 0.45
+                                roughness 0.6
+                                metalness 0.0
+                              }
+                              geometry Mesh {
+                                url [ "../meshes/link_s3_print.stl" ]
+                              }
+                            }
+                            Shape {
+                              appearance PBRAppearance {
+                                baseColor 0.22 0.22 0.25
+                                roughness 0.5
+                                metalness 0.2
+                              }
+                              geometry Mesh {
+                                url [ "../meshes/link_s3_dark.stl" ]
+                              }
+                            }
+                          ]
+                        }
+                        HingeJoint {
+                          jointParameters HingeJointParameters {
+                            # -Y comme en v7. q4 = -120° - poignet CAO. Butées = neutre 0 ±135° (HYPOTHÈSE non confirmée).
+                            axis 0 -1 0
+                            anchor -0.226577 -0.031 0.105655
+                            dampingConstant 0.08
+                            staticFriction 0.04
+                          }
+                          device [
+                            RotationalMotor {
+                              name "S4_poignet"
+                              minPosition -4.4506
+                              maxPosition 0.2618
+                              maxVelocity 2.5
+                              maxTorque 3.43
+                              acceleration 8
+                              sound ""
+                            }
+                            PositionSensor {
+                              name "S4_poignet_sensor"
+                            }
+                          ]
+                          endPoint DEF S4_LINK Solid {
+                            translation -0.226577 -0.031 0.105655
+                            name "S4_poignet_link"
+                            children [
+                              Transform {
+                                scale 0.001 0.001 0.001
+                                children [
+                                  Shape {
+                                    appearance PBRAppearance {
+                                      baseColor 0.45 0.80 0.45
+                                      roughness 0.6
+                                      metalness 0.0
+                                    }
+                                    geometry Mesh {
+                                      url [ "../meshes/link_s4_print.stl" ]
+                                    }
+                                  }
+                                  Shape {
+                                    appearance PBRAppearance {
+                                      baseColor 0.22 0.22 0.25
+                                      roughness 0.5
+                                      metalness 0.2
+                                    }
+                                    geometry Mesh {
+                                      url [ "../meshes/link_s4_dark.stl" ]
+                                    }
+                                  }
+                                ]
+                              }
+                              # Bout des doigts (L3 + bec = 210 mm depuis l'axe poignet), pour les tests superviseur.
+                              DEF GRIP_TIP Pose {
+                                translation 0.018302 -0.027 -0.209201
+                              }
+                              HingeJoint {
+                                jointParameters HingeJointParameters {
+                                  # Axe du mors mobile après le roulis fixe de 90° : ~ le long de L3 (repos). Négatif = ouvre (vers +Y au repos), 0 = fermé (jeu 0,3 mm), >0 traverserait le bec.
+                                  axis -0.996195 0 -0.087156
+                                  anchor 0.013073 -0.027 -0.149429
+                                  dampingConstant 0.04
+                                  staticFriction 0.02
+                                }
+                                device [
+                                  RotationalMotor {
+                                    name "S5_pince"
+                                    minPosition -1.5708
+                                    maxPosition 0.0000
+                                    maxVelocity 3
+                                    maxTorque 3.43
+                                    acceleration 10
+                                    sound ""
+                                  }
+                                  PositionSensor {
+                                    name "S5_pince_sensor"
+                                  }
+                                ]
+                                endPoint DEF S5_LINK Solid {
+                                  translation 0.013073 -0.027 -0.149429
+                                  name "S5_pince_link"
+                                  children [
+                                    Transform {
+                                      scale 0.001 0.001 0.001
+                                      children [
+                                        Shape {
+                                          appearance PBRAppearance {
+                                            baseColor 0.40 0.62 0.92
+                                            roughness 0.6
+                                            metalness 0.0
+                                          }
+                                          geometry Mesh {
+                                            url [ "../meshes/link_s5_jaw.stl" ]
+                                          }
+                                        }
+                                        Shape {
+                                          appearance PBRAppearance {
+                                            baseColor 0.22 0.22 0.25
+                                            roughness 0.5
+                                            metalness 0.2
+                                          }
+                                          geometry Mesh {
+                                            url [ "../meshes/link_s5_dark.stl" ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                  physics Physics {
+                                    # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
+                                    density -1
+                                    mass 0.021
+                                    centerOfMass [ -0.001486 0.002656 -0.011374 ]
+                                    inertiaMatrix [
+                                      7.6379e-06 7.1767e-06 1.2949e-06
+                                      5.6397e-08 2.9797e-07 8.0235e-07
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                            physics Physics {
+                              # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
+                              density -1
+                              mass 0.140
+                              centerOfMass [ 0.018288 -0.029724 -0.097298 ]
+                              inertiaMatrix [
+                                3.9747e-04 4.2329e-04 5.3066e-05
+                                -5.0304e-06 8.7753e-05 1.4893e-05
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                      physics Physics {
+                        # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
+                        density -1
+                        mass 0.278
+                        centerOfMass [ -0.133435 -0.008188 0.062222 ]
+                        inertiaMatrix [
+                          6.0371e-04 2.5637e-03 2.2315e-03
+                          -1.9001e-04 9.6994e-04 8.8602e-05
+                        ]
+                      }
+                    }
+                  }
+                ]
+                physics Physics {
+                  # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
+                  density -1
+                  mass 0.379
+                  centerOfMass [ 0.045314 0.001623 0.097176 ]
+                  inertiaMatrix [
+                    9.0278e-04 9.3369e-04 3.5280e-04
+                    -5.4075e-06 -3.2772e-04 -1.1596e-05
+                  ]
+                }
+              }
+            }
+          ]
+          physics Physics {
+            # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
+            density -1
+            mass 0.345
+            centerOfMass [ 0.000001 0.000782 -0.029772 ]
+            inertiaMatrix [
+              3.3305e-04 3.2422e-04 1.7878e-04
+              -1.4469e-10 1.6484e-08 -6.5700e-06
+            ]
+          }
+        }
+      }
       HingeJoint {
         jointParameters HingeJointParameters {
           axis 0 1 0
-          anchor 0.30 0.24 0.0825
+          anchor 0.3 0.24 0.0825
           dampingConstant 0.06
           staticFriction 0.02
         }
@@ -321,7 +472,7 @@ PROTO Agribot [
           }
         ]
         endPoint Solid {
-          translation 0.30 0.24 0.0825
+          translation 0.3 0.24 0.0825
           name "fl_wheel"
           contactMaterial "tire"
           children [
@@ -330,35 +481,52 @@ PROTO Agribot [
               children [
                 Shape {
                   appearance PBRAppearance {
-                    baseColor 0.20 0.45 0.19
-                    roughness 0.85
+                    baseColor 0.45 0.80 0.45
+                    roughness 0.6
+                    metalness 0.0
                   }
                   geometry Mesh {
-                    url [ "../meshes/front_left_wheel.stl" ]
+                    url [ "../meshes/wheel_fl_rim.stl" ]
+                  }
+                }
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.25 0.25 0.27
+                    roughness 0.9
+                    metalness 0.0
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/wheel_fl_tire.stl" ]
                   }
                 }
               ]
             }
           ]
-          boundingObject Transform {
+          boundingObject Pose {
             rotation 1 0 0 1.5707963
             children [
               Cylinder {
-                height 0.032
+                height 0.020
                 radius 0.0825
               }
             ]
           }
           physics Physics {
+            # jante PETG + bande TPU (nomenclature) + accouplement (estimé)
             density -1
-            mass 0.65
+            mass 0.262
+            centerOfMass [ -0 -0.003256 0.000001 ]
+            inertiaMatrix [
+              4.3548e-04 8.4853e-04 4.3548e-04
+              1.9178e-12 -9.5372e-13 -5.0858e-09
+            ]
           }
         }
       }
       HingeJoint {
         jointParameters HingeJointParameters {
           axis 0 1 0
-          anchor 0.30 -0.24 0.0825
+          anchor 0.3 -0.24 0.0825
           dampingConstant 0.06
           staticFriction 0.02
         }
@@ -372,7 +540,7 @@ PROTO Agribot [
           }
         ]
         endPoint Solid {
-          translation 0.30 -0.24 0.0825
+          translation 0.3 -0.24 0.0825
           name "fr_wheel"
           contactMaterial "tire"
           children [
@@ -381,35 +549,52 @@ PROTO Agribot [
               children [
                 Shape {
                   appearance PBRAppearance {
-                    baseColor 0.20 0.45 0.19
-                    roughness 0.85
+                    baseColor 0.45 0.80 0.45
+                    roughness 0.6
+                    metalness 0.0
                   }
                   geometry Mesh {
-                    url [ "../meshes/front_right_wheel.stl" ]
+                    url [ "../meshes/wheel_fr_rim.stl" ]
+                  }
+                }
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.25 0.25 0.27
+                    roughness 0.9
+                    metalness 0.0
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/wheel_fr_tire.stl" ]
                   }
                 }
               ]
             }
           ]
-          boundingObject Transform {
+          boundingObject Pose {
             rotation 1 0 0 1.5707963
             children [
               Cylinder {
-                height 0.032
+                height 0.020
                 radius 0.0825
               }
             ]
           }
           physics Physics {
+            # jante PETG + bande TPU (nomenclature) + accouplement (estimé)
             density -1
-            mass 0.65
+            mass 0.262
+            centerOfMass [ -0 0.003256 0.000001 ]
+            inertiaMatrix [
+              4.3548e-04 8.4853e-04 4.3548e-04
+              -1.7775e-12 1.4642e-12 5.0863e-09
+            ]
           }
         }
       }
       HingeJoint {
         jointParameters HingeJointParameters {
           axis 0 1 0
-          anchor -0.30 0.24 0.0825
+          anchor -0.3 0.24 0.0825
           dampingConstant 0.06
           staticFriction 0.02
         }
@@ -423,7 +608,7 @@ PROTO Agribot [
           }
         ]
         endPoint Solid {
-          translation -0.30 0.24 0.0825
+          translation -0.3 0.24 0.0825
           name "rl_wheel"
           contactMaterial "tire"
           children [
@@ -432,35 +617,52 @@ PROTO Agribot [
               children [
                 Shape {
                   appearance PBRAppearance {
-                    baseColor 0.20 0.45 0.19
-                    roughness 0.85
+                    baseColor 0.45 0.80 0.45
+                    roughness 0.6
+                    metalness 0.0
                   }
                   geometry Mesh {
-                    url [ "../meshes/rear_left_wheel.stl" ]
+                    url [ "../meshes/wheel_rl_rim.stl" ]
+                  }
+                }
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.25 0.25 0.27
+                    roughness 0.9
+                    metalness 0.0
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/wheel_rl_tire.stl" ]
                   }
                 }
               ]
             }
           ]
-          boundingObject Transform {
+          boundingObject Pose {
             rotation 1 0 0 1.5707963
             children [
               Cylinder {
-                height 0.032
+                height 0.020
                 radius 0.0825
               }
             ]
           }
           physics Physics {
+            # jante PETG + bande TPU (nomenclature) + accouplement (estimé)
             density -1
-            mass 0.65
+            mass 0.262
+            centerOfMass [ 0 -0.003256 0.000001 ]
+            inertiaMatrix [
+              4.3548e-04 8.4853e-04 4.3548e-04
+              -1.7271e-12 -1.8678e-12 -5.0859e-09
+            ]
           }
         }
       }
       HingeJoint {
         jointParameters HingeJointParameters {
           axis 0 1 0
-          anchor -0.30 -0.24 0.0825
+          anchor -0.3 -0.24 0.0825
           dampingConstant 0.06
           staticFriction 0.02
         }
@@ -474,7 +676,7 @@ PROTO Agribot [
           }
         ]
         endPoint Solid {
-          translation -0.30 -0.24 0.0825
+          translation -0.3 -0.24 0.0825
           name "rr_wheel"
           contactMaterial "tire"
           children [
@@ -483,49 +685,131 @@ PROTO Agribot [
               children [
                 Shape {
                   appearance PBRAppearance {
-                    baseColor 0.20 0.45 0.19
-                    roughness 0.85
+                    baseColor 0.45 0.80 0.45
+                    roughness 0.6
+                    metalness 0.0
                   }
                   geometry Mesh {
-                    url [ "../meshes/rear_right_wheel.stl" ]
+                    url [ "../meshes/wheel_rr_rim.stl" ]
+                  }
+                }
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.25 0.25 0.27
+                    roughness 0.9
+                    metalness 0.0
+                  }
+                  geometry Mesh {
+                    url [ "../meshes/wheel_rr_tire.stl" ]
                   }
                 }
               ]
             }
           ]
-          boundingObject Transform {
+          boundingObject Pose {
             rotation 1 0 0 1.5707963
             children [
               Cylinder {
-                height 0.032
+                height 0.020
                 radius 0.0825
               }
             ]
           }
           physics Physics {
+            # jante PETG + bande TPU (nomenclature) + accouplement (estimé)
             density -1
-            mass 0.65
+            mass 0.262
+            centerOfMass [ 0 0.003256 0.000001 ]
+            inertiaMatrix [
+              4.3548e-04 8.4853e-04 4.3548e-04
+              1.8234e-12 2.1260e-12 5.0862e-09
+            ]
           }
         }
       }
     ]
-    # Boîte de collision du xacro. Bas à z=0,110 : au-dessus des roues (haut z=0,165)
-    # et plus étroite (y ±0,215) que l'intérieur des roues (y ±0,224).
-    boundingObject Transform {
-      translation -0.018 0 0.255
+    # Collision du corps : boîtes simples. Roues à l'extérieur (faces internes y ±230) :
+    # le plateau (y ±220) descend à z 105 sans les toucher.
+    boundingObject Group {
       children [
-        Box {
-          size 0.84 0.43 0.29
+        # Châssis 2020 + plateau : x -462..420, y ±220, z 105..127.
+        Pose {
+          translation -0.021 0 0.116
+          children [
+            Box {
+              size 0.882 0.44 0.022
+            }
+          ]
+        }
+        # Cabine fermée + capot : x 290..426, y ±150, z 127..401.
+        Pose {
+          translation 0.358 0 0.264
+          children [
+            Box {
+              size 0.136 0.3 0.274
+            }
+          ]
+        }
+        # Rehausse + LiDAR : sommet à 500.
+        Pose {
+          translation 0.3415 0 0.4505
+          children [
+            Box {
+              size 0.097 0.07 0.099
+            }
+          ]
+        }
+        # Bac P14 570x440x240 posé à plat : fond + 4 parois, intérieur creux (la pince repose dedans).
+        Pose {
+          translation -0.175 0 0.13
+          children [
+            Box {
+              size 0.57 0.44 0.006
+            }
+          ]
+        }
+        Pose {
+          translation -0.4575 0 0.247
+          children [
+            Box {
+              size 0.005 0.44 0.24
+            }
+          ]
+        }
+        Pose {
+          translation 0.1075 0 0.247
+          children [
+            Box {
+              size 0.005 0.44 0.24
+            }
+          ]
+        }
+        Pose {
+          translation -0.175 0.2175 0.247
+          children [
+            Box {
+              size 0.57 0.005 0.24
+            }
+          ]
+        }
+        Pose {
+          translation -0.175 -0.2175 0.247
+          children [
+            Box {
+              size 0.57 0.005 0.24
+            }
+          ]
         }
       ]
     }
     physics Physics {
+      # masse/inertie : PETG nomenclature v9b + alu (volume CAO) + achats ESTIMÉS (cf. tools/v9b_mass_report.json)
       density -1
-      mass 24
-      centerOfMass 0 0 0.22
+      mass 13.913
+      centerOfMass [ 0.057854 -0.000322 0.180979 ]
       inertiaMatrix [
-        0.85 1.15 1.45
-        0 0 0
+        3.8520e-01 1.3058e+00 1.4481e+00
+        1.1191e-03 -1.1906e-01 8.6713e-04
       ]
     }
   }

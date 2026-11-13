@@ -1,0 +1,777 @@
+{
+ "rest_pose_deg": [
+  180.0,
+  115.0,
+  -90.0,
+  -120.0
+ ],
+ "anchors_mm": {
+  "s1": [
+   170.0,
+   0.0,
+   200.0
+  ],
+  "s2": [
+   170.0,
+   0.0,
+   200.0
+  ],
+  "s3": [
+   233.393,
+   -0.0,
+   335.946
+  ],
+  "s4": [
+   6.816,
+   -31.0,
+   441.601
+  ],
+  "s5": [
+   19.889,
+   -58.0,
+   292.172
+  ]
+ },
+ "s5_axis": [
+  -0.996195,
+  0.0,
+  -0.087156
+ ],
+ "tip_mm": [
+  25.118,
+  -58.0,
+  232.4
+ ],
+ "links": {
+  "body": {
+   "mass": 13.91289559944237,
+   "com": [
+    0.05785422372127451,
+    -0.00032156195460098836,
+    0.18097946658179595
+   ],
+   "inertia": [
+    [
+     0.3851975040070493,
+     0.001119117554917199,
+     -0.11906490633500381
+    ],
+    [
+     0.001119117554917199,
+     1.305843461295486,
+     0.0008671328098437987
+    ],
+    [
+     -0.11906490633500381,
+     0.0008671328098437987,
+     1.4481495448977917
+    ]
+   ],
+   "parts": {
+    "A01_Longeron_2020_D": [
+     570.4,
+     "volume alu"
+    ],
+    "A01_Longeron_2020_G": [
+     570.4,
+     "volume alu"
+    ],
+    "A02_Traverse_2020_1": [
+     246.5,
+     "volume alu"
+    ],
+    "A02_Traverse_2020_2": [
+     246.5,
+     "volume alu"
+    ],
+    "A02_Traverse_2020_3": [
+     246.5,
+     "volume alu"
+    ],
+    "A02_Traverse_2020_4": [
+     246.5,
+     "volume alu"
+    ],
+    "A02_Traverse_2020_5": [
+     246.5,
+     "volume alu"
+    ],
+    "A03_Plateau_tole": [
+     2069.9,
+     "volume alu"
+    ],
+    "A04_Cabine_flanc_D": [
+     206.5,
+     "volume alu"
+    ],
+    "A04_Cabine_flanc_G": [
+     206.5,
+     "volume alu"
+    ],
+    "A05_Cabine_bandeau_avant": [
+     36.2,
+     "volume alu"
+    ],
+    "A06_Cabine_panneau_arriere": [
+     585.2,
+     "volume alu"
+    ],
+    "A07_Cabine_toit": [
+     313.2,
+     "volume alu"
+    ],
+    "A08_Etagere_electronique": [
+     157.9,
+     "volume alu"
+    ],
+    "A11_Equerre_2020_1": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_10": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_11": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_12": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_13": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_14": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_15": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_16": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_2": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_3": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_4": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_5": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_6": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_7": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_8": [
+     10.0,
+     "estimation"
+    ],
+    "A11_Equerre_2020_9": [
+     10.0,
+     "estimation"
+    ],
+    "A13_Traverse_basse_avant": [
+     68.7,
+     "volume alu"
+    ],
+    "A14_Capot_avant": [
+     630.5,
+     "volume alu"
+    ],
+    "B01_Roulement_plateau_3p": [
+     50.0,
+     "estimation"
+    ],
+    "E01_LiPo_3S_10Ah": [
+     750.0,
+     "estimation"
+    ],
+    "E02_IBT2_1": [
+     66.0,
+     "estimation"
+    ],
+    "E02_IBT2_2": [
+     66.0,
+     "estimation"
+    ],
+    "E03_Arduino_UNO_Q": [
+     30.0,
+     "estimation"
+    ],
+    "E04_ESP32_DevKitC": [
+     10.0,
+     "estimation"
+    ],
+    "E05_XL4015_6V": [
+     30.0,
+     "estimation"
+    ],
+    "E06_XL4015_5V": [
+     30.0,
+     "estimation"
+    ],
+    "E07_74HCT245": [
+     10.0,
+     "estimation"
+    ],
+    "E08_Bloc_fusibles": [
+     60.0,
+     "estimation"
+    ],
+    "E09_Arret_urgence": [
+     80.0,
+     "estimation"
+    ],
+    "E10_Interrupteur_principal": [
+     50.0,
+     "estimation"
+    ],
+    "E11_RPLIDAR_A1M8": [
+     170.0,
+     "estimation"
+    ],
+    "E12_Camera_avant": [
+     80.0,
+     "estimation"
+    ],
+    "M_ArD_JGB37_520": [
+     205.0,
+     "estimation"
+    ],
+    "M_ArG_JGB37_520": [
+     205.0,
+     "estimation"
+    ],
+    "M_AvD_JGB37_520": [
+     205.0,
+     "estimation"
+    ],
+    "M_AvG_JGB37_520": [
+     205.0,
+     "estimation"
+    ],
+    "P01_Support_moteur_ArD": [
+     28.8,
+     "nomenclature"
+    ],
+    "P01_Support_moteur_ArG": [
+     28.8,
+     "nomenclature"
+    ],
+    "P01_Support_moteur_AvD": [
+     28.8,
+     "nomenclature"
+    ],
+    "P01_Support_moteur_AvG": [
+     28.8,
+     "nomenclature"
+    ],
+    "P03_Berceau_servo_lacet": [
+     98.5,
+     "nomenclature"
+    ],
+    "P10_Montant_cabine_1": [
+     76.1,
+     "nomenclature"
+    ],
+    "P10_Montant_cabine_2": [
+     76.1,
+     "nomenclature"
+    ],
+    "P10_Montant_cabine_3": [
+     76.1,
+     "nomenclature"
+    ],
+    "P10_Montant_cabine_4": [
+     76.1,
+     "nomenclature"
+    ],
+    "P11_Rail_etagere_D": [
+     14.4,
+     "nomenclature"
+    ],
+    "P11_Rail_etagere_G": [
+     14.4,
+     "nomenclature"
+    ],
+    "P12_Rehausse_LiDAR": [
+     82.6,
+     "nomenclature"
+    ],
+    "P13_Support_camera_avant": [
+     30.4,
+     "nomenclature"
+    ],
+    "P14_Bac_moitie_1": [
+     1982.9,
+     "nomenclature"
+    ],
+    "P14_Bac_moitie_2": [
+     2063.3,
+     "nomenclature"
+    ],
+    "P17_Pion_bac_1": [
+     0.3,
+     "nomenclature"
+    ],
+    "P17_Pion_bac_2": [
+     0.3,
+     "nomenclature"
+    ],
+    "P17_Pion_bac_3": [
+     0.3,
+     "nomenclature"
+    ],
+    "P17_Pion_bac_4": [
+     0.3,
+     "nomenclature"
+    ],
+    "P19_Poignee_capot": [
+     3.9,
+     "nomenclature"
+    ],
+    "S1_DS3235_lacet": [
+     60.0,
+     "estimation"
+    ],
+    "V05_Aimant_capot_1": [
+     4.0,
+     "estimation"
+    ],
+    "V05_Aimant_capot_2": [
+     4.0,
+     "estimation"
+    ],
+    "V06_Contreplaque_capot_1": [
+     4.0,
+     "estimation"
+    ],
+    "V06_Contreplaque_capot_2": [
+     4.0,
+     "estimation"
+    ],
+    "V07_Charniere_capot_fixe_1": [
+     4.0,
+     "estimation"
+    ],
+    "V07_Charniere_capot_fixe_2": [
+     4.0,
+     "estimation"
+    ],
+    "V07_Charniere_capot_mobile_1": [
+     4.0,
+     "estimation"
+    ],
+    "V07_Charniere_capot_mobile_2": [
+     4.0,
+     "estimation"
+    ]
+   }
+  },
+  "wheel_fl": {
+   "mass": 0.26239999999999997,
+   "com": [
+    -2.27155291961744e-09,
+    -0.003256229681179519,
+    1.4755652513683096e-06
+   ],
+   "inertia": [
+    [
+     0.0004354825186530047,
+     1.9178408986983044e-12,
+     -9.537217073178955e-13
+    ],
+    [
+     1.9178408986983044e-12,
+     0.0008485320110623811,
+     -5.085841462516037e-09
+    ],
+    [
+     -9.537217073178955e-13,
+     -5.085841462516037e-09,
+     0.00043548362909898386
+    ]
+   ],
+   "parts": {
+    "P02_Jante_AvG": [
+     198.6,
+     "nomenclature"
+    ],
+    "C_AvG_Accouplement_6mm": [
+     20.0,
+     "estimation"
+    ],
+    "P18_Bande_TPU_AvG": [
+     43.8,
+     "nomenclature"
+    ]
+   }
+  },
+  "wheel_fr": {
+   "mass": 0.26239999999999997,
+   "com": [
+    -1.819831203064837e-09,
+    0.0032562296765994295,
+    1.4754048116432704e-06
+   ],
+   "inertia": [
+    [
+     0.00043548251855279245,
+     -1.7775264343076592e-12,
+     1.4641917666369282e-12
+    ],
+    [
+     -1.7775264343076592e-12,
+     0.0008485320120978903,
+     5.0863162210349704e-09
+    ],
+    [
+     1.4641917666369282e-12,
+     5.0863162210349704e-09,
+     0.00043548363022489405
+    ]
+   ],
+   "parts": {
+    "P02_Jante_AvD": [
+     198.6,
+     "nomenclature"
+    ],
+    "C_AvD_Accouplement_6mm": [
+     20.0,
+     "estimation"
+    ],
+    "P18_Bande_TPU_AvD": [
+     43.8,
+     "nomenclature"
+    ]
+   }
+  },
+  "wheel_rl": {
+   "mass": 0.26239999999999997,
+   "com": [
+    1.7472406625702707e-09,
+    -0.0032562296787992787,
+    1.4757047948500553e-06
+   ],
+   "inertia": [
+    [
+     0.0004354825175088133,
+     -1.7270890844617304e-12,
+     -1.867808508273282e-12
+    ],
+    [
+     -1.7270890844617304e-12,
+     0.0008485320116474284,
+     -5.085889776192546e-09
+    ],
+    [
+     -1.867808508273282e-12,
+     -5.085889776192546e-09,
+     0.0004354836308236256
+    ]
+   ],
+   "parts": {
+    "P02_Jante_ArG": [
+     198.6,
+     "nomenclature"
+    ],
+    "C_ArG_Accouplement_6mm": [
+     20.0,
+     "estimation"
+    ],
+    "P18_Bande_TPU_ArG": [
+     43.8,
+     "nomenclature"
+    ]
+   }
+  },
+  "wheel_rr": {
+   "mass": 0.26239999999999997,
+   "com": [
+    2.1678059731473745e-09,
+    0.0032562296737706207,
+    1.4752423908072051e-06
+   ],
+   "inertia": [
+    [
+     0.000435482519606628,
+     1.823435299406221e-12,
+     2.1260147878566147e-12
+    ],
+    [
+     1.823435299406221e-12,
+     0.0008485320124708484,
+     5.086249095782221e-09
+    ],
+    [
+     2.1260147878566147e-12,
+     5.086249095782221e-09,
+     0.0004354836295384515
+    ]
+   ],
+   "parts": {
+    "P02_Jante_ArD": [
+     198.6,
+     "nomenclature"
+    ],
+    "C_ArD_Accouplement_6mm": [
+     20.0,
+     "estimation"
+    ],
+    "P18_Bande_TPU_ArD": [
+     43.8,
+     "nomenclature"
+    ]
+   }
+  },
+  "s1": {
+   "mass": 0.3449,
+   "com": [
+    1.483051280414519e-06,
+    0.0007819689115724889,
+    -0.02977232506099461
+   ],
+   "inertia": [
+    [
+     0.00033305101815590083,
+     -1.4469157525032794e-10,
+     1.648421919369177e-08
+    ],
+    [
+     -1.4469157525032794e-10,
+     0.0003242243486546669,
+     -6.569999019254182e-06
+    ],
+    [
+     1.648421919369177e-08,
+     -6.569999019254182e-06,
+     0.00017877559131114436
+    ]
+   ],
+   "parts": {
+    "P04_Plateau_tournant": [
+     61.9,
+     "nomenclature"
+    ],
+    "P05_Chape_epaule": [
+     120.0,
+     "nomenclature"
+    ],
+    "S1_palonnier": [
+     8.0,
+     "estimation"
+    ],
+    "S2_RDS5160_epaule": [
+     155.0,
+     "estimation"
+    ]
+   }
+  },
+  "s2": {
+   "mass": 0.37893963501150274,
+   "com": [
+    0.04531382373627247,
+    0.0016232158437532633,
+    0.0971757988905478
+   ],
+   "inertia": [
+    [
+     0.0009027766740643637,
+     -5.407525012757977e-06,
+     -0.00032771864993975957
+    ],
+    [
+     -5.407525012757977e-06,
+     0.0009336919528039728,
+     -1.1596477350023166e-05
+    ],
+    [
+     -0.00032771864993975957,
+     -1.1596477350023166e-05,
+     0.0003527982037782915
+    ]
+   ],
+   "parts": {
+    "A09_Bras_L1_plat_G": [
+     59.5,
+     "volume alu"
+    ],
+    "A09_Bras_L1_plat_D": [
+     64.9,
+     "volume alu"
+    ],
+    "P06_Berceau_coude": [
+     83.5,
+     "nomenclature"
+    ],
+    "S2_palonnier": [
+     8.0,
+     "estimation"
+    ],
+    "S3_RDS5160_coude": [
+     155.0,
+     "estimation"
+    ],
+    "V01_Entretoise_pivot_epaule_5": [
+     4.0,
+     "estimation"
+    ],
+    "V02_Vis_M4x8_pivot_epaule": [
+     4.0,
+     "estimation"
+    ]
+   }
+  },
+  "s3": {
+   "mass": 0.2778237025532526,
+   "com": [
+    -0.13343492331672527,
+    -0.008188311825540605,
+    0.06222157542128288
+   ],
+   "inertia": [
+    [
+     0.000603708889954966,
+     -0.00019000740334516164,
+     0.0009699436015011643
+    ],
+    [
+     -0.00019000740334516164,
+     0.0025637281435457234,
+     8.860227553180747e-05
+    ],
+    [
+     0.0009699436015011643,
+     8.860227553180747e-05,
+     0.0022314738420164994
+    ]
+   ],
+   "parts": {
+    "A10_Bras_L2_tube": [
+     48.6,
+     "volume alu"
+    ],
+    "P07_Chape_coude_L2": [
+     87.5,
+     "nomenclature"
+    ],
+    "P08_Bloc_poignet": [
+     65.7,
+     "nomenclature"
+    ],
+    "S3_palonnier": [
+     8.0,
+     "estimation"
+    ],
+    "S4_DS3235_poignet": [
+     60.0,
+     "estimation"
+    ],
+    "V03_Entretoise_pivot_coude_15": [
+     4.0,
+     "estimation"
+    ],
+    "V04_Vis_M4x8_pivot_coude": [
+     4.0,
+     "estimation"
+    ]
+   }
+  },
+  "s4": {
+   "mass": 0.14,
+   "com": [
+    0.018287641327784442,
+    -0.029723717453168822,
+    -0.09729778323372958
+   ],
+   "inertia": [
+    [
+     0.0003974725557056081,
+     -5.030419459003411e-06,
+     8.775320476210122e-05
+    ],
+    [
+     -5.030419459003411e-06,
+     0.0004232864855928511,
+     1.489264931873212e-05
+    ],
+    [
+     8.775320476210122e-05,
+     1.489264931873212e-05,
+     5.30658706944749e-05
+    ]
+   ],
+   "parts": {
+    "P09_Poutre_L3_pince": [
+     57.0,
+     "nomenclature"
+    ],
+    "S4_palonnier": [
+     8.0,
+     "estimation"
+    ],
+    "E13_Camera_bras": [
+     15.0,
+     "estimation"
+    ],
+    "S5_DS3235_pince": [
+     60.0,
+     "estimation"
+    ]
+   }
+  },
+  "s5": {
+   "mass": 0.021400000000000002,
+   "com": [
+    -0.0014859808205609493,
+    0.002655679899540449,
+    -0.011374496131818235
+   ],
+   "inertia": [
+    [
+     7.637879514060224e-06,
+     5.639741141193688e-08,
+     2.9796799811200095e-07
+    ],
+    [
+     5.639741141193688e-08,
+     7.176699798759064e-06,
+     8.02352153092072e-07
+    ],
+    [
+     2.9796799811200095e-07,
+     8.02352153092072e-07,
+     1.2948832200167395e-06
+    ]
+   ],
+   "parts": {
+    "P16_Mors_mobile": [
+     13.4,
+     "nomenclature"
+    ],
+    "S5_palonnier": [
+     8.0,
+     "estimation"
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,78 @@
+#VRML_SIM R2025a utf8
+# Banc d'essai v9b : apparition, pose repos, pose sol, fermeture de la pince, petit roulage.
+# Contrôleur controllers/v9b_pose_test (superviseur). Sans clavier, lançable en --batch.
+
+EXTERNPROTO "../protos/Agribot.proto"
+EXTERNPROTO "../protos/WeedClump.proto"
+
+WorldInfo {
+  info [
+    "Essai des poses Agribot v9b."
+  ]
+  title "Agribot v9b pose test"
+  basicTimeStep 16
+  coordinateSystem "ENU"
+  contactProperties [
+    ContactProperties {
+      material1 "tire"
+      material2 "soil"
+      coulombFriction 1.2
+      bounce 0
+      bounceVelocity 0.01
+      softCFM 0.0001
+      bumpSound ""
+      rollSound ""
+      slideSound ""
+    }
+  ]
+}
+DEF VIEW Viewpoint {
+  fieldOfView 0.7
+  orientation -0.2 0.2 0.96 1.6
+  position 1.6 -1.6 1.1
+  near 0.05
+  far 40
+}
+Background {
+  skyColor [
+    0.80 0.88 0.96
+  ]
+}
+DirectionalLight {
+  direction 0.35 0.15 -1
+  intensity 2.6
+  ambientIntensity 0.9
+  color 1 0.98 0.94
+  castShadows FALSE
+}
+DirectionalLight {
+  direction -0.25 -0.35 -0.8
+  intensity 0.7
+  ambientIntensity 0.4
+  castShadows FALSE
+}
+Solid {
+  name "ground"
+  translation 0 0 -0.1
+  contactMaterial "soil"
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.62 0.50 0.36
+        roughness 0.95
+      }
+      geometry Box {
+        size 20 20 0.2
+      }
+    }
+  ]
+  boundingObject Box {
+    size 20 20 0.2
+  }
+}
+# Touffe sous le bout des doigts de la pose sol CAO (x 0.228, y -0.380).
+DEF WEED WeedClump { translation 0.228 -0.380 0 name "weed_test" }
+DEF AGRIBOT Agribot {
+  translation 0 0 0.005
+  controller "v9b_pose_test"
+}
