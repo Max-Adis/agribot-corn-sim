@@ -1,0 +1,37 @@
+#VRML_SIM R2025a utf8
+# Croton hirtus : touffe gris-vert (h ~8 cm).
+# Adventice préhensible : nom « weed… » (reconnu par agribot_controller), petit cylindre de
+# collision (r 0.04 m, h 0.08 m) désactivable via « collision », Physics optionnelle (NULL = statique,
+# déplacée par le superviseur lors de la saisie).
+PROTO WeedCroton [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "weed_croton"
+  field SFBool     collision   TRUE
+  field SFNode     physics     NULL
+]
+{
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+Pose { translation 0 0 0.005 rotation 0 0 1 0.000 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 0.898 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 1.795 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 2.693 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 3.590 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 4.488 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 5.386 children [ Pose { translation 0.027 0 0.023 rotation 0 1 0 -0.700 children [ Shape { appearance PBRAppearance { baseColor 0.46 0.58 0.40 roughness 0.6 metalness 0.0 } geometry Box { size 0.070 0.030 0.003 } } ] } ] }
+Pose { translation 0 0 0.02 rotation 0 0 1 0.500 children [ Pose { translation 0.014 0 0.021 rotation 0 1 0 -1.000 children [ Shape { appearance PBRAppearance { baseColor 0.52 0.64 0.46 roughness 0.6 metalness 0.0 } geometry Box { size 0.050 0.028 0.003 } } ] } ] }
+Pose { translation 0 0 0.02 rotation 0 0 1 1.757 children [ Pose { translation 0.014 0 0.021 rotation 0 1 0 -1.000 children [ Shape { appearance PBRAppearance { baseColor 0.52 0.64 0.46 roughness 0.6 metalness 0.0 } geometry Box { size 0.050 0.028 0.003 } } ] } ] }
+Pose { translation 0 0 0.02 rotation 0 0 1 3.013 children [ Pose { translation 0.014 0 0.021 rotation 0 1 0 -1.000 children [ Shape { appearance PBRAppearance { baseColor 0.52 0.64 0.46 roughness 0.6 metalness 0.0 } geometry Box { size 0.050 0.028 0.003 } } ] } ] }
+Pose { translation 0 0 0.02 rotation 0 0 1 4.270 children [ Pose { translation 0.014 0 0.021 rotation 0 1 0 -1.000 children [ Shape { appearance PBRAppearance { baseColor 0.52 0.64 0.46 roughness 0.6 metalness 0.0 } geometry Box { size 0.050 0.028 0.003 } } ] } ] }
+Pose { translation 0 0 0.02 rotation 0 0 1 5.527 children [ Pose { translation 0.014 0 0.021 rotation 0 1 0 -1.000 children [ Shape { appearance PBRAppearance { baseColor 0.52 0.64 0.46 roughness 0.6 metalness 0.0 } geometry Box { size 0.050 0.028 0.003 } } ] } ] }
+    ]
+    %< if (fields.collision.value) { >%
+    boundingObject Pose { translation 0 0 0.0400 children [ Cylinder { height 0.08 radius 0.04 } ] }
+    %< } >%
+    physics IS physics
+  }
+}

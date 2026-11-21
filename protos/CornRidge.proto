@@ -1,0 +1,24 @@
+#VRML_SIM R2025a utf8
+# Butte de culture : dessus 25 cm, pied 29 cm, hauteur 8 cm (au-dessus du sol), longueur réglable.
+PROTO CornRidge [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "ridge"
+  field SFFloat    length      6.4
+]
+{
+  %< const L = fields.length.value; >%
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+      Pose { translation 0 0 0.02 children [ Shape { appearance PBRAppearance { baseColor 0.97 0.95 0.93 baseColorMap ImageTexture { url [ "textures/terre.jpg" ] } roughness 1 metalness 0 textureTransform TextureTransform { scale %<= (3 * L / 6.4).toFixed(2) >% 0.15 } } geometry Box { size %<= (L + 0.04).toFixed(3) >% 0.29 0.04 } } ] }
+      Pose { translation 0 0 0.04 children [ Shape { appearance PBRAppearance { baseColor 1 1 1 baseColorMap ImageTexture { url [ "textures/terre.jpg" ] } roughness 1 metalness 0 textureTransform TextureTransform { scale %<= (3 * L / 6.4).toFixed(2) >% 0.12 } } geometry Box { size %<= L.toFixed(3) >% 0.25 0.08 } } ] }
+    ]
+    boundingObject Group { children [
+      Pose { translation 0 0 0.02 children [ Box { size %<= (L + 0.04).toFixed(3) >% 0.29 0.04 } ] }
+      Pose { translation 0 0 0.04 children [ Box { size %<= L.toFixed(3) >% 0.25 0.08 } ] }
+    ] }
+  }
+}

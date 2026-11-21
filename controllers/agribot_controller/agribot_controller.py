@@ -486,8 +486,24 @@ def bin_local(slot):
     return (-0.02 + column * 0.04, -0.04 + row * 0.04, 0.17)
 
 
+def field_layout(robot):
+    """Allée suivie et fin de rang, lues dans customData (« lane_y=0.0 row_end_x=3.0 »)."""
+    lane_y, row_end_x = LANE_Y, ROW_END_X
+    for item in robot.getCustomData().split():
+        key, _sep, value = item.partition('=')
+        try:
+            if key == 'lane_y':
+                lane_y = float(value)
+            elif key == 'row_end_x':
+                row_end_x = float(value)
+        except ValueError:
+            print(f"customData ignoré : {item}", flush=True)
+    return lane_y, row_end_x
+
+
 def run_robot():
     robot = Supervisor()
+    lane_y, row_end_x = field_layout(robot)
     time_step = int(robot.getBasicTimeStep())
     dt = time_step / 1000.0
 
@@ -688,12 +704,12 @@ def run_robot():
             track_carried(pose)
             translation, rotation = pose
             heading = heading_of(rotation)
-            lane = LANE_Y
+            lane = lane_y
             speed = 0.0
             steer = 0.0
 
             if state == 'cruise':
-                if translation[0] > ROW_END_X:
+                if translation[0] > row_end_x:
                     if not announced_end:
                         print("Fin du rang.", flush=True)
                         announced_end = True
@@ -706,7 +722,7 @@ def run_robot():
                             position[0], position[1], position[2], translation, rotation
                         )
                         in_window = GRASP_X0 <= x_rel <= GRASP_X1
-                        in_alley = abs(translation[1] - LANE_Y) < 0.1
+                        in_alley = abs(translation[1] - lane_y) < 0.1
                         if in_window and in_alley:
                             speed = 0.0
                             state = 'brake'

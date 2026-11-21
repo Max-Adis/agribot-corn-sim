@@ -1,0 +1,45 @@
+#VRML_SIM R2025a utf8
+# Euphorbia prostrata : tapis ras de fines tiges (h ~1 cm).
+# Adventice préhensible : nom « weed… » (reconnu par agribot_controller), petit cylindre de
+# collision (r 0.05 m, h 0.015 m) désactivable via « collision », Physics optionnelle (NULL = statique,
+# déplacée par le superviseur lors de la saisie).
+PROTO WeedEuphorbia [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "weed_euphorbia"
+  field SFBool     collision   TRUE
+  field SFNode     physics     NULL
+]
+{
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+Pose { translation 0 0 0.005 rotation 0 0 1 0.000 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 0.524 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 1.047 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 1.571 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 2.094 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 2.618 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 3.142 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 3.665 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 4.189 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 4.712 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 5.236 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.005 rotation 0 0 1 5.760 children [ Pose { translation 0.045 0 0.002 rotation 0 1 0 -0.050 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.52 0.22 roughness 0.6 metalness 0.0 } geometry Box { size 0.090 0.012 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 0.200 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 0.985 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 1.771 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 2.556 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 3.342 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 4.127 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 4.912 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+Pose { translation 0 0 0.008 rotation 0 0 1 5.698 children [ Pose { translation 0.030 0 0.003 rotation 0 1 0 -0.100 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.56 0.24 roughness 0.6 metalness 0.0 } geometry Box { size 0.060 0.010 0.003 } } ] } ] }
+    ]
+    %< if (fields.collision.value) { >%
+    boundingObject Pose { translation 0 0 0.0075 children [ Cylinder { height 0.015 radius 0.05 } ] }
+    %< } >%
+    physics IS physics
+  }
+}

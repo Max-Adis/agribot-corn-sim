@@ -1,0 +1,53 @@
+#VRML_SIM R2025a utf8
+# Borne de recharge : socle, fût 0,26 x 0,20 x 1,0 m, bandeau vert, écran (face +X), câble.
+# cableConnected TRUE : câble branché sur la prise du robot garé au dock (borne à (+0,05 ; +0,85) m
+# du centre de la place, soit à GAUCHE du robot). FALSE : connecteur rangé sur la borne.
+PROTO ChargingStation [
+  field SFVec3f    translation    0 0 0
+  field SFRotation rotation       0 0 1 0
+  field SFString   name           "charging_station"
+  field SFBool     cableConnected TRUE
+]
+{
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+Pose { translation 0 0 0.03 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.25 0.27 roughness 0.6 metalness 0.3  } geometry Box { size 0.36 0.30 0.06 } } ] }
+Pose { translation 0 0 0.56 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.92 0.93 0.94 roughness 0.4 metalness 0.1  } geometry Box { size 0.26 0.20 1.00 } } ] }
+Pose { translation 0 0 0.91 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.20 0.62 0.25 roughness 0.4 metalness 0.0  } geometry Box { size 0.27 0.21 0.06 } } ] }
+Pose { translation 0 0 1.08 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.25 0.25 0.27 roughness 0.5 metalness 0.3  } geometry Box { size 0.32 0.26 0.04 } } ] }
+Pose { translation 0.131 0 0.78 rotation 0.57735 0.57735 0.57735 2.0944 children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "textures/ecran.png" ] } emissiveColorMap ImageTexture { url [ "textures/ecran.png" ] } emissiveIntensity 0.8 roughness 0.2 metalness 0 } geometry Plane { size 0.16 0.08 } } ] }
+      %< if (fields.cableConnected.value) { >%
+Pose { translation -0.0062 -0.1203 0.4999 rotation 0.9559 -0.2938 0.0000 2.7399 children [ Shape { appearance DEF CABLE PBRAppearance { baseColor 0.05 0.05 0.05 roughness 0.6 metalness 0 } geometry Cylinder { height 0.1188 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0187 -0.1610 0.4024 rotation 0.9559 -0.2938 0.0000 2.7200 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.1140 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0312 -0.2017 0.3127 rotation 0.9559 -0.2938 0.0000 2.6758 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.1047 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0437 -0.2423 0.2353 rotation 0.9559 -0.2938 0.0000 2.5966 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0921 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0562 -0.2830 0.1740 rotation 0.9559 -0.2938 0.0000 2.4603 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0776 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0688 -0.3237 0.1314 rotation 0.9559 -0.2938 0.0000 2.2264 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0637 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0813 -0.3643 0.1089 rotation 0.9559 -0.2938 0.0000 1.8517 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0543 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.0938 -0.4050 0.1065 rotation 0.9559 -0.2938 0.0000 1.3970 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0532 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.1062 -0.4457 0.1228 rotation 0.9559 -0.2938 0.0000 1.0365 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0594 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.1187 -0.4863 0.1552 rotation 0.9559 -0.2938 0.0000 0.8208 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0681 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.1312 -0.5270 0.1999 rotation 0.9559 -0.2938 0.0000 0.7065 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0755 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.1437 -0.5677 0.2524 rotation 0.9559 -0.2938 0.0000 0.6571 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0796 radius 0.012 subdivision 8 } } ] }
+Pose { translation -0.150 -0.576 0.280 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.20 0.62 0.25 roughness 0.5 metalness 0.0  } geometry Box { size 0.07 0.03 0.06 } } ] }
+      %< } else { >%
+Pose { translation 0.0037 -0.1013 0.4998 rotation 0.3162 0.9487 -0.0000 3.0630 children [ Shape { appearance DEF CABLE PBRAppearance { baseColor 0.05 0.05 0.05 roughness 0.6 metalness 0 } geometry Cylinder { height 0.1108 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0112 -0.1038 0.4057 rotation 0.3162 0.9487 -0.0000 3.0516 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0980 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0187 -0.1063 0.3300 rotation 0.3162 0.9487 -0.0000 3.0186 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0744 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0262 -0.1087 0.2815 rotation 0.3162 0.9487 -0.0000 2.9064 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0439 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0338 -0.1113 0.2652 rotation 0.3162 0.9487 -0.0000 1.5081 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0179 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0412 -0.1137 0.2812 rotation 0.3162 0.9487 -0.0000 0.2463 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0424 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0488 -0.1162 0.3245 rotation 0.3162 0.9487 -0.0000 0.1424 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0657 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.0562 -0.1187 0.3860 rotation 0.3162 0.9487 -0.0000 0.1158 children [ Shape { appearance USE CABLE geometry Cylinder { height 0.0784 radius 0.012 subdivision 8 } } ] }
+Pose { translation 0.06 -0.115 0.42 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.20 0.62 0.25 roughness 0.5 metalness 0.0  } geometry Box { size 0.07 0.03 0.06 } } ] }
+      %< } >%
+    ]
+    boundingObject Group { children [
+      Pose { translation 0 0 0.03 children [ Box { size 0.36 0.30 0.06 } ] }
+      Pose { translation 0 0 0.56 children [ Box { size 0.26 0.20 1.00 } ] }
+    ] }
+  }
+}

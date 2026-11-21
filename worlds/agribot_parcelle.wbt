@@ -1,0 +1,190 @@
+#VRML_SIM R2025a utf8
+# Parcelle AGRI-BOT clôturée (validée, « preview_v2 ») : 14.5 x 9.6 m, 6 rangs de maïs de 6 m sur buttes,
+# allées de 60 cm, plants tous les 50 cm, 32 adventices sur les buttes entre les plants,
+# zone avant 5.0 m (dock, borne, benne), zone arrière 3.5 m, dégagements latéraux 2.55 m.
+# Généré par tools/gen_parcelle.py. Repère ENU, Z vers le haut, rangs selon +X.
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "../protos/Agribot.proto"
+EXTERNPROTO "../protos/CornPlantV8.proto"
+EXTERNPROTO "../protos/CornRidge.proto"
+EXTERNPROTO "../protos/WoodFence3Rail.proto"
+EXTERNPROTO "../protos/AgribotDock.proto"
+EXTERNPROTO "../protos/ChargingStation.proto"
+EXTERNPROTO "../protos/WeedDisposalBin.proto"
+EXTERNPROTO "../protos/WeedGomphrena.proto"
+EXTERNPROTO "../protos/WeedAcalypha.proto"
+EXTERNPROTO "../protos/WeedEuphorbia.proto"
+EXTERNPROTO "../protos/WeedCroton.proto"
+EXTERNPROTO "../protos/WeedCommelina.proto"
+
+WorldInfo {
+  info [
+    "Parcelle AGRI-BOT : 6 rangs x 13 plants (pas 0,50 m), allées 0,60 m (rangs à 0,85 m), allée centrale y = 0."
+    "Dock à x = -7.0, y = 0.0 (robot face aux rangs). Borne à gauche, benne à droite."
+  ]
+  title "AGRI-BOT parcelle"
+  basicTimeStep 32
+  coordinateSystem "ENU"
+  contactProperties [
+    ContactProperties { material1 "tire" material2 "soil" coulombFriction 1.2 bounce 0 bounceVelocity 0.01 softCFM 0.0001 bumpSound "" rollSound "" slideSound "" }
+  ]
+}
+Viewpoint {
+  fieldOfView 0.8
+  orientation -0.2246 0.5763 0.7858 0.9209
+  position -14.5 -12.5 11.5
+  description "Vue générale"
+  near 0.05
+  far 120
+}
+TexturedBackground { texture "noon_park_empty" }
+TexturedBackgroundLight { texture "noon_park_empty" luminosity 0.8 }
+DirectionalLight { direction 0.35 0.55 -1 intensity 1.25 ambientIntensity 0.3 castShadows TRUE }
+# gazon
+Solid { name "gazon" children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../protos/textures/gazon.jpg" ] } roughness 1 metalness 0 textureTransform TextureTransform { scale 30 30 } } geometry Plane { size 80 80 } } ] boundingObject Plane { size 80 80 } contactMaterial "soil" }
+# parcelle de terre nue 14.5 x 9.6 m
+Solid { name "parcelle" translation -0.750 0 0.005 children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../protos/textures/terre.jpg" ] } roughness 1 metalness 0 textureTransform TextureTransform { scale 5.80 3.84 } } geometry Box { size 14.500 9.600 0.01 } } ] boundingObject Box { size 14.500 9.600 0.01 } contactMaterial "soil" }
+CornRidge { translation 0.000 -2.125 0.01 name "ridge_0" length 6.40 }
+CornRidge { translation 0.000 -1.275 0.01 name "ridge_1" length 6.40 }
+CornRidge { translation 0.000 -0.425 0.01 name "ridge_2" length 6.40 }
+CornRidge { translation 0.000 0.425 0.01 name "ridge_3" length 6.40 }
+CornRidge { translation 0.000 1.275 0.01 name "ridge_4" length 6.40 }
+CornRidge { translation 0.000 2.125 0.01 name "ridge_5" length 6.40 }
+CornPlantV8 { translation -3.000 -2.126 0.090 rotation 0 0 1 3.52 name "corn_0_0" leafColor 0.23 0.58 0.15 }
+CornPlantV8 { translation -2.500 -2.123 0.090 rotation 0 0 1 1.16 name "corn_0_1" leafColor 0.21 0.59 0.17 }
+CornPlantV8 { translation -2.000 -2.133 0.090 rotation 0 0 1 1.91 name "corn_0_2" leafColor 0.18 0.61 0.16 }
+CornPlantV8 { translation -1.500 -2.134 0.090 rotation 0 0 1 6.17 name "corn_0_3" leafColor 0.24 0.60 0.16 }
+CornPlantV8 { translation -1.000 -2.132 0.090 rotation 0 0 1 0.09 name "corn_0_4" leafColor 0.21 0.54 0.13 }
+CornPlantV8 { translation -0.500 -2.130 0.090 rotation 0 0 1 0.19 name "corn_0_5" leafColor 0.20 0.57 0.17 }
+CornPlantV8 { translation 0.000 -2.125 0.090 rotation 0 0 1 4.02 name "corn_0_6" leafColor 0.20 0.60 0.15 }
+CornPlantV8 { translation 0.500 -2.129 0.090 rotation 0 0 1 6.27 name "corn_0_7" leafColor 0.24 0.61 0.16 }
+CornPlantV8 { translation 1.000 -2.129 0.090 rotation 0 0 1 1.44 name "corn_0_8" leafColor 0.19 0.54 0.17 }
+CornPlantV8 { translation 1.500 -2.127 0.090 rotation 0 0 1 5.32 name "corn_0_9" leafColor 0.20 0.63 0.17 }
+CornPlantV8 { translation 2.000 -2.135 0.090 rotation 0 0 1 1.32 name "corn_0_10" leafColor 0.23 0.58 0.18 }
+CornPlantV8 { translation 2.500 -2.127 0.090 rotation 0 0 1 0.46 name "corn_0_11" leafColor 0.21 0.61 0.14 }
+CornPlantV8 { translation 3.000 -2.133 0.090 rotation 0 0 1 2.09 name "corn_0_12" leafColor 0.24 0.61 0.13 }
+CornPlantV8 { translation -3.000 -1.280 0.090 rotation 0 0 1 0.63 name "corn_1_0" leafColor 0.17 0.61 0.13 }
+CornPlantV8 { translation -2.500 -1.274 0.090 rotation 0 0 1 2.81 name "corn_1_1" leafColor 0.18 0.60 0.13 }
+CornPlantV8 { translation -2.000 -1.272 0.090 rotation 0 0 1 0.73 name "corn_1_2" leafColor 0.20 0.55 0.14 }
+CornPlantV8 { translation -1.500 -1.266 0.090 rotation 0 0 1 5.05 name "corn_1_3" leafColor 0.19 0.62 0.13 }
+CornPlantV8 { translation -1.000 -1.277 0.090 rotation 0 0 1 5.37 name "corn_1_4" leafColor 0.21 0.54 0.18 }
+CornPlantV8 { translation -0.500 -1.281 0.090 rotation 0 0 1 1.62 name "corn_1_5" leafColor 0.22 0.56 0.14 }
+CornPlantV8 { translation 0.000 -1.284 0.090 rotation 0 0 1 0.57 name "corn_1_6" leafColor 0.21 0.55 0.16 }
+CornPlantV8 { translation 0.500 -1.278 0.090 rotation 0 0 1 2.85 name "corn_1_7" leafColor 0.24 0.58 0.15 }
+CornPlantV8 { translation 1.000 -1.268 0.090 rotation 0 0 1 1.15 name "corn_1_8" leafColor 0.18 0.62 0.17 }
+CornPlantV8 { translation 1.500 -1.280 0.090 rotation 0 0 1 1.19 name "corn_1_9" leafColor 0.22 0.62 0.13 }
+CornPlantV8 { translation 2.000 -1.266 0.090 rotation 0 0 1 5.54 name "corn_1_10" leafColor 0.21 0.57 0.13 }
+CornPlantV8 { translation 2.500 -1.284 0.090 rotation 0 0 1 6.05 name "corn_1_11" leafColor 0.19 0.60 0.14 }
+CornPlantV8 { translation 3.000 -1.269 0.090 rotation 0 0 1 3.75 name "corn_1_12" leafColor 0.19 0.55 0.16 }
+CornPlantV8 { translation -3.000 -0.434 0.090 rotation 0 0 1 1.43 name "corn_2_0" leafColor 0.21 0.62 0.16 }
+CornPlantV8 { translation -2.500 -0.429 0.090 rotation 0 0 1 5.76 name "corn_2_1" leafColor 0.18 0.53 0.14 }
+CornPlantV8 { translation -2.000 -0.426 0.090 rotation 0 0 1 0.38 name "corn_2_2" leafColor 0.18 0.57 0.15 }
+CornPlantV8 { translation -1.500 -0.432 0.090 rotation 0 0 1 2.27 name "corn_2_3" leafColor 0.23 0.63 0.16 }
+CornPlantV8 { translation -1.000 -0.421 0.090 rotation 0 0 1 3.67 name "corn_2_4" leafColor 0.18 0.53 0.12 }
+CornPlantV8 { translation -0.500 -0.417 0.090 rotation 0 0 1 4.40 name "corn_2_5" leafColor 0.24 0.53 0.16 }
+CornPlantV8 { translation 0.000 -0.425 0.090 rotation 0 0 1 4.59 name "corn_2_6" leafColor 0.19 0.63 0.12 }
+CornPlantV8 { translation 0.500 -0.424 0.090 rotation 0 0 1 4.63 name "corn_2_7" leafColor 0.23 0.60 0.16 }
+CornPlantV8 { translation 1.000 -0.419 0.090 rotation 0 0 1 5.75 name "corn_2_8" leafColor 0.19 0.60 0.17 }
+CornPlantV8 { translation 1.500 -0.418 0.090 rotation 0 0 1 2.62 name "corn_2_9" leafColor 0.23 0.62 0.15 }
+CornPlantV8 { translation 2.000 -0.423 0.090 rotation 0 0 1 2.40 name "corn_2_10" leafColor 0.21 0.59 0.12 }
+CornPlantV8 { translation 2.500 -0.422 0.090 rotation 0 0 1 6.24 name "corn_2_11" leafColor 0.23 0.60 0.14 }
+CornPlantV8 { translation 3.000 -0.420 0.090 rotation 0 0 1 3.65 name "corn_2_12" leafColor 0.20 0.61 0.13 }
+CornPlantV8 { translation -3.000 0.430 0.090 rotation 0 0 1 0.19 name "corn_3_0" leafColor 0.21 0.58 0.13 }
+CornPlantV8 { translation -2.500 0.429 0.090 rotation 0 0 1 3.12 name "corn_3_1" leafColor 0.21 0.62 0.14 }
+CornPlantV8 { translation -2.000 0.415 0.090 rotation 0 0 1 1.89 name "corn_3_2" leafColor 0.22 0.55 0.13 }
+CornPlantV8 { translation -1.500 0.433 0.090 rotation 0 0 1 4.14 name "corn_3_3" leafColor 0.20 0.62 0.14 }
+CornPlantV8 { translation -1.000 0.428 0.090 rotation 0 0 1 1.25 name "corn_3_4" leafColor 0.20 0.61 0.17 }
+CornPlantV8 { translation -0.500 0.433 0.090 rotation 0 0 1 2.41 name "corn_3_5" leafColor 0.21 0.56 0.13 }
+CornPlantV8 { translation 0.000 0.425 0.090 rotation 0 0 1 5.26 name "corn_3_6" leafColor 0.23 0.60 0.18 }
+CornPlantV8 { translation 0.500 0.421 0.090 rotation 0 0 1 1.06 name "corn_3_7" leafColor 0.20 0.56 0.13 }
+CornPlantV8 { translation 1.000 0.423 0.090 rotation 0 0 1 3.93 name "corn_3_8" leafColor 0.20 0.56 0.17 }
+CornPlantV8 { translation 1.500 0.435 0.090 rotation 0 0 1 2.84 name "corn_3_9" leafColor 0.18 0.53 0.17 }
+CornPlantV8 { translation 2.000 0.416 0.090 rotation 0 0 1 4.45 name "corn_3_10" leafColor 0.21 0.56 0.17 }
+CornPlantV8 { translation 2.500 0.415 0.090 rotation 0 0 1 0.85 name "corn_3_11" leafColor 0.20 0.53 0.17 }
+CornPlantV8 { translation 3.000 0.420 0.090 rotation 0 0 1 0.88 name "corn_3_12" leafColor 0.17 0.59 0.15 }
+CornPlantV8 { translation -3.000 1.278 0.090 rotation 0 0 1 4.11 name "corn_4_0" leafColor 0.23 0.63 0.16 }
+CornPlantV8 { translation -2.500 1.269 0.090 rotation 0 0 1 2.98 name "corn_4_1" leafColor 0.18 0.53 0.15 }
+CornPlantV8 { translation -2.000 1.279 0.090 rotation 0 0 1 1.12 name "corn_4_2" leafColor 0.19 0.56 0.16 }
+CornPlantV8 { translation -1.500 1.275 0.090 rotation 0 0 1 3.86 name "corn_4_3" leafColor 0.22 0.57 0.17 }
+CornPlantV8 { translation -1.000 1.283 0.090 rotation 0 0 1 0.55 name "corn_4_4" leafColor 0.24 0.60 0.13 }
+CornPlantV8 { translation -0.500 1.274 0.090 rotation 0 0 1 3.93 name "corn_4_5" leafColor 0.23 0.57 0.15 }
+CornPlantV8 { translation 0.000 1.283 0.090 rotation 0 0 1 5.00 name "corn_4_6" leafColor 0.24 0.58 0.16 }
+CornPlantV8 { translation 0.500 1.269 0.090 rotation 0 0 1 4.53 name "corn_4_7" leafColor 0.23 0.59 0.16 }
+CornPlantV8 { translation 1.000 1.269 0.090 rotation 0 0 1 5.65 name "corn_4_8" leafColor 0.24 0.63 0.15 }
+CornPlantV8 { translation 1.500 1.281 0.090 rotation 0 0 1 2.01 name "corn_4_9" leafColor 0.23 0.62 0.14 }
+CornPlantV8 { translation 2.000 1.267 0.090 rotation 0 0 1 2.77 name "corn_4_10" leafColor 0.21 0.61 0.15 }
+CornPlantV8 { translation 2.500 1.266 0.090 rotation 0 0 1 5.08 name "corn_4_11" leafColor 0.17 0.61 0.13 }
+CornPlantV8 { translation 3.000 1.272 0.090 rotation 0 0 1 4.95 name "corn_4_12" leafColor 0.18 0.54 0.15 }
+CornPlantV8 { translation -3.000 2.129 0.090 rotation 0 0 1 5.28 name "corn_5_0" leafColor 0.22 0.62 0.15 }
+CornPlantV8 { translation -2.500 2.134 0.090 rotation 0 0 1 0.54 name "corn_5_1" leafColor 0.19 0.58 0.14 }
+CornPlantV8 { translation -2.000 2.130 0.090 rotation 0 0 1 4.01 name "corn_5_2" leafColor 0.21 0.61 0.15 }
+CornPlantV8 { translation -1.500 2.121 0.090 rotation 0 0 1 2.39 name "corn_5_3" leafColor 0.23 0.62 0.13 }
+CornPlantV8 { translation -1.000 2.132 0.090 rotation 0 0 1 6.08 name "corn_5_4" leafColor 0.21 0.59 0.13 }
+CornPlantV8 { translation -0.500 2.126 0.090 rotation 0 0 1 3.16 name "corn_5_5" leafColor 0.21 0.53 0.18 }
+CornPlantV8 { translation 0.000 2.125 0.090 rotation 0 0 1 2.52 name "corn_5_6" leafColor 0.23 0.59 0.15 }
+CornPlantV8 { translation 0.500 2.129 0.090 rotation 0 0 1 0.41 name "corn_5_7" leafColor 0.21 0.57 0.18 }
+CornPlantV8 { translation 1.000 2.133 0.090 rotation 0 0 1 1.69 name "corn_5_8" leafColor 0.20 0.54 0.15 }
+CornPlantV8 { translation 1.500 2.131 0.090 rotation 0 0 1 5.66 name "corn_5_9" leafColor 0.20 0.56 0.13 }
+CornPlantV8 { translation 2.000 2.127 0.090 rotation 0 0 1 5.81 name "corn_5_10" leafColor 0.18 0.61 0.12 }
+CornPlantV8 { translation 2.500 2.119 0.090 rotation 0 0 1 1.43 name "corn_5_11" leafColor 0.22 0.56 0.14 }
+CornPlantV8 { translation 3.000 2.127 0.090 rotation 0 0 1 0.66 name "corn_5_12" leafColor 0.22 0.54 0.15 }
+# adventices : uniquement sur les buttes, à mi-distance entre deux plants (32 des 72 intervalles)
+WeedGomphrena { translation -2.787 -2.087 0.090 rotation 0 0 1 1.57 name "weed_0_gomphrena" }
+WeedAcalypha { translation -1.299 -2.103 0.090 rotation 0 0 1 1.24 name "weed_1_acalypha" }
+WeedEuphorbia { translation -0.704 -2.152 0.090 rotation 0 0 1 3.33 name "weed_2_euphorbia" }
+WeedCroton { translation 0.217 -2.140 0.090 rotation 0 0 1 2.74 name "weed_3_croton" }
+WeedCommelina { translation 1.220 -2.095 0.090 rotation 0 0 1 2.36 name "weed_4_commelina" }
+WeedGomphrena { translation 2.263 -2.150 0.090 rotation 0 0 1 2.60 name "weed_5_gomphrena" }
+WeedAcalypha { translation 2.797 -2.149 0.090 rotation 0 0 1 3.32 name "weed_6_acalypha" }
+WeedEuphorbia { translation -2.203 -1.284 0.090 rotation 0 0 1 1.00 name "weed_7_euphorbia" }
+WeedCroton { translation -1.798 -1.282 0.090 rotation 0 0 1 1.28 name "weed_8_croton" }
+WeedCommelina { translation -1.206 -1.294 0.090 rotation 0 0 1 3.96 name "weed_9_commelina" }
+WeedGomphrena { translation -0.267 -1.250 0.090 rotation 0 0 1 4.01 name "weed_10_gomphrena" }
+WeedAcalypha { translation 1.259 -1.267 0.090 rotation 0 0 1 3.33 name "weed_11_acalypha" }
+WeedEuphorbia { translation 2.771 -1.310 0.090 rotation 0 0 1 5.35 name "weed_12_euphorbia" }
+WeedCroton { translation -2.764 -0.441 0.090 rotation 0 0 1 3.84 name "weed_13_croton" }
+WeedCommelina { translation -1.730 -0.450 0.090 rotation 0 0 1 5.38 name "weed_14_commelina" }
+WeedGomphrena { translation -0.753 -0.451 0.090 rotation 0 0 1 1.46 name "weed_15_gomphrena" }
+WeedAcalypha { translation 0.226 -0.390 0.090 rotation 0 0 1 4.65 name "weed_16_acalypha" }
+WeedEuphorbia { translation 0.795 -0.436 0.090 rotation 0 0 1 5.09 name "weed_17_euphorbia" }
+WeedCroton { translation 1.240 -0.421 0.090 rotation 0 0 1 5.67 name "weed_18_croton" }
+WeedCommelina { translation 2.242 -0.435 0.090 rotation 0 0 1 1.98 name "weed_19_commelina" }
+WeedGomphrena { translation -2.716 0.421 0.090 rotation 0 0 1 1.98 name "weed_20_gomphrena" }
+WeedAcalypha { translation -1.229 0.435 0.090 rotation 0 0 1 5.79 name "weed_21_acalypha" }
+WeedEuphorbia { translation 0.795 0.395 0.090 rotation 0 0 1 1.37 name "weed_22_euphorbia" }
+WeedCroton { translation 1.225 0.451 0.090 rotation 0 0 1 6.27 name "weed_23_croton" }
+WeedCommelina { translation 1.746 0.426 0.090 rotation 0 0 1 5.57 name "weed_24_commelina" }
+WeedGomphrena { translation 2.289 0.405 0.090 rotation 0 0 1 0.84 name "weed_25_gomphrena" }
+WeedAcalypha { translation 0.746 1.282 0.090 rotation 0 0 1 1.50 name "weed_26_acalypha" }
+WeedEuphorbia { translation 2.278 1.264 0.090 rotation 0 0 1 4.56 name "weed_27_euphorbia" }
+WeedCroton { translation 2.730 1.270 0.090 rotation 0 0 1 1.63 name "weed_28_croton" }
+WeedCommelina { translation -0.202 2.102 0.090 rotation 0 0 1 0.61 name "weed_29_commelina" }
+WeedGomphrena { translation 0.751 2.114 0.090 rotation 0 0 1 5.23 name "weed_30_gomphrena" }
+WeedAcalypha { translation 1.715 2.107 0.090 rotation 0 0 1 2.65 name "weed_31_acalypha" }
+WoodFence3Rail { translation -8.000 -4.800 0 rotation 0 0 1 1.5708 name "fence_front" length 9.600 segments 5 }
+WoodFence3Rail { translation 6.500 -4.800 0 rotation 0 0 1 1.5708 name "fence_rear" length 9.600 segments 5 }
+WoodFence3Rail { translation -8.000 -4.800 0 rotation 0 0 1 0.0000 name "fence_right" length 14.500 segments 8 }
+WoodFence3Rail { translation -8.000 4.800 0 rotation 0 0 1 0.0000 name "fence_left" length 14.500 segments 8 }
+# marquage au sol : quadrillage 1 m de la zone avant
+Group { children [
+Pose { translation -6.000 0 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 0.03 9.20 0.002 } } ] }
+Pose { translation -5.000 0 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 0.03 9.20 0.002 } } ] }
+Pose { translation -4.000 0 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 0.03 9.20 0.002 } } ] }
+Pose { translation -4.800 -4.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 -3.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 -2.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 -1.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 0.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 1.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 2.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 3.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+Pose { translation -4.800 4.000 0.0110 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.60 0.48 0.34 roughness 1 metalness 0.0  } geometry Box { size 2.80 0.03 0.002 } } ] }
+] }
+AgribotDock { translation -7.0 0.0 0.01 name "dock" }
+ChargingStation { translation -6.950 0.850 0.110 name "charging_station" }
+WeedDisposalBin { translation -6.950 -1.350 0.110 name "weed_disposal_bin" }
+DEF AGRIBOT Agribot {
+  translation -7.000 0.000 0.114
+  customData "lane_y=0.0 row_end_x=3.0"
+}

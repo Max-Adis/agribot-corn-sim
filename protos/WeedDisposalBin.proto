@@ -1,0 +1,62 @@
+#VRML_SIM R2025a utf8
+# Benne ouverte à adventices (jaune-vert) 1,10 x 0,75 x 0,55 m sur pieds, avec un tas d'herbes arrachées.
+# Placée à DROITE du robot garé (centre à (+0,05 ; -1,35) m de la place). Les herbes du tas s'appellent
+# « waste_… » (ignorées par agribot_controller) et n'ont pas de collision.
+EXTERNPROTO "WeedGomphrena.proto"
+EXTERNPROTO "WeedAcalypha.proto"
+EXTERNPROTO "WeedEuphorbia.proto"
+EXTERNPROTO "WeedCroton.proto"
+EXTERNPROTO "WeedCommelina.proto"
+PROTO WeedDisposalBin [
+  field SFVec3f    translation 0 0 0
+  field SFRotation rotation    0 0 1 0
+  field SFString   name        "weed_disposal_bin"
+]
+{
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    children [
+Pose { translation 0 0 0.06 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.62 0.74 0.14 roughness 0.5 metalness 0.3  } geometry Box { size 1.10 0.75 0.04 } } ] }
+Pose { translation 0 0.355 0.315 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.62 0.74 0.14 roughness 0.5 metalness 0.3  } geometry Box { size 1.10 0.04 0.55 } } ] }
+Pose { translation 0.530 0 0.315 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.62 0.74 0.14 roughness 0.5 metalness 0.3  } geometry Box { size 0.04 0.67 0.55 } } ] }
+Pose { translation 0 0.375 0.590 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.50 0.60 0.10 roughness 0.5 metalness 0.3  } geometry Box { size 1.14 0.06 0.03 } } ] }
+Pose { translation -0.420 0.260 0.02 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.2 0.2 roughness 0.7 metalness 0.0  } geometry Box { size 0.10 0.10 0.04 } } ] }
+Pose { translation 0.420 0.260 0.02 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.2 0.2 roughness 0.7 metalness 0.0  } geometry Box { size 0.10 0.10 0.04 } } ] }
+Pose { translation 0 -0.355 0.315 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.62 0.74 0.14 roughness 0.5 metalness 0.3  } geometry Box { size 1.10 0.04 0.55 } } ] }
+Pose { translation -0.530 0 0.315 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.62 0.74 0.14 roughness 0.5 metalness 0.3  } geometry Box { size 0.04 0.67 0.55 } } ] }
+Pose { translation 0 -0.375 0.590 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.50 0.60 0.10 roughness 0.5 metalness 0.3  } geometry Box { size 1.14 0.06 0.03 } } ] }
+Pose { translation -0.420 -0.260 0.02 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.2 0.2 roughness 0.7 metalness 0.0  } geometry Box { size 0.10 0.10 0.04 } } ] }
+Pose { translation 0.420 -0.260 0.02 rotation 0 0 1 0 children [ Shape { appearance PBRAppearance { baseColor 0.2 0.2 0.2 roughness 0.7 metalness 0.0  } geometry Box { size 0.10 0.10 0.04 } } ] }
+Pose { translation 0.000 0.000 0.410 rotation 0 0 1 0 children [ Transform { scale 0.24 0.15 0.10 children [ Shape { appearance PBRAppearance { baseColor 0.40 0.36 0.20 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation 0.205 0.172 0.360 rotation 0 0 1 0 children [ Transform { scale 0.24 0.15 0.10 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.44 0.20 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation -0.075 0.214 0.360 rotation 0 0 1 0 children [ Transform { scale 0.25 0.20 0.08 children [ Shape { appearance PBRAppearance { baseColor 0.40 0.36 0.20 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation -0.298 0.094 0.360 rotation 0 0 1 0 children [ Transform { scale 0.23 0.16 0.12 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.40 0.16 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation -0.296 -0.097 0.360 rotation 0 0 1 0 children [ Transform { scale 0.24 0.17 0.08 children [ Shape { appearance PBRAppearance { baseColor 0.40 0.36 0.20 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation -0.070 -0.215 0.360 rotation 0 0 1 0 children [ Transform { scale 0.23 0.19 0.10 children [ Shape { appearance PBRAppearance { baseColor 0.30 0.40 0.16 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+Pose { translation 0.209 -0.170 0.360 rotation 0 0 1 0 children [ Transform { scale 0.19 0.15 0.11 children [ Shape { appearance PBRAppearance { baseColor 0.36 0.44 0.20 roughness 0.95 metalness 0.0 } geometry Sphere { radius 1 subdivision 2 } } ] } ] }
+WeedGomphrena { translation 0.093 0.000 0.450 rotation 0.85 -0.81 1 0.36 name "waste_0" collision FALSE }
+WeedAcalypha { translation 0.201 0.155 0.480 rotation 0.90 -0.08 1 0.99 name "waste_1" collision FALSE }
+WeedEuphorbia { translation -0.056 0.147 0.420 rotation -0.35 -0.07 1 0.76 name "waste_2" collision FALSE }
+WeedCroton { translation -0.153 0.044 0.450 rotation -0.14 0.20 1 0.31 name "waste_3" collision FALSE }
+WeedCommelina { translation -0.083 -0.025 0.480 rotation 0.40 0.69 1 0.46 name "waste_4" collision FALSE }
+WeedGomphrena { translation -0.068 -0.194 0.420 rotation -0.09 0.48 1 0.66 name "waste_5" collision FALSE }
+WeedAcalypha { translation 0.157 -0.117 0.450 rotation -0.61 -0.67 1 0.76 name "waste_6" collision FALSE }
+WeedEuphorbia { translation 0.170 0.002 0.480 rotation -0.97 0.79 1 1.02 name "waste_7" collision FALSE }
+WeedCroton { translation 0.056 0.045 0.420 rotation 0.41 0.72 1 0.87 name "waste_8" collision FALSE }
+WeedCommelina { translation -0.079 0.192 0.450 rotation -0.19 0.20 1 0.75 name "waste_9" collision FALSE }
+WeedGomphrena { translation -0.225 0.062 0.480 rotation 0.97 0.61 1 0.53 name "waste_10" collision FALSE }
+WeedAcalypha { translation -0.151 -0.047 0.420 rotation 0.82 0.49 1 1.00 name "waste_11" collision FALSE }
+WeedEuphorbia { translation -0.018 -0.055 0.450 rotation 0.63 -0.19 1 1.11 name "waste_12" collision FALSE }
+WeedCroton { translation 0.210 -0.151 0.480 rotation 0.76 0.39 1 0.99 name "waste_13" collision FALSE }
+    ]
+    boundingObject Group { children [
+Pose { translation 0 0 0.06 rotation 0 0 1 0 children [ Box { size 1.10 0.75 0.04 } ] }
+Pose { translation 0 0.355 0.315 rotation 0 0 1 0 children [ Box { size 1.10 0.04 0.55 } ] }
+Pose { translation 0 -0.355 0.315 rotation 0 0 1 0 children [ Box { size 1.10 0.04 0.55 } ] }
+Pose { translation 0.530 0 0.315 rotation 0 0 1 0 children [ Box { size 0.04 0.67 0.55 } ] }
+Pose { translation -0.530 0 0.315 rotation 0 0 1 0 children [ Box { size 0.04 0.67 0.55 } ] }
+    ] }
+  }
+}

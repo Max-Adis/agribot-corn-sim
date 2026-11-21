@@ -15,6 +15,7 @@ PROTO Agribot [
   field SFRotation rotation    0 0 1 0
   field SFString   name        "agribot"
   field SFString   controller  "agribot_controller"
+  field SFString   customData  ""
 ]
 {
   Robot {
@@ -22,6 +23,7 @@ PROTO Agribot [
     rotation IS rotation
     name IS name
     controller IS controller
+    customData IS customData
     supervisor TRUE
     selfCollision TRUE
     children [
