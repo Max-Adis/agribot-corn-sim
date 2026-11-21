@@ -1,0 +1,28 @@
+{
+  "profile": "ps4_windows",
+  "comment": "Rejeu d'une séance manette (AGRIBOT_GAMEPAD_REPLAY=tests/gamepad_replay.json). Chaque étape vaut jusqu'à la suivante.",
+  "steps": [
+    {"t": 0.0, "axes": {}, "buttons": []},
+    {"t": 1.0, "axes": {"ly": 1.0}, "buttons": []},
+    {"t": 2.0, "axes": {"ly": 1.0}, "buttons": ["r1"]},
+    {"t": 4.0, "axes": {}, "buttons": []},
+    {"t": 4.5, "axes": {}, "buttons": ["l1"]},
+    {"t": 4.7, "axes": {}, "buttons": []},
+    {"t": 5.0, "axes": {"ly": 1.0, "lx": 0.8}, "buttons": ["r1"]},
+    {"t": 6.0, "axes": {"rx": 1.0, "ry": 1.0}, "buttons": []},
+    {"t": 7.0, "axes": {}, "buttons": ["cross"]},
+    {"t": 7.2, "axes": {}, "buttons": ["r1"]},
+    {"t": 8.5, "axes": {"ry": 1.0, "rx": -1.0}, "buttons": ["r1"]},
+    {"t": 10.0, "axes": {}, "buttons": ["circle"]},
+    {"t": 10.2, "axes": {"lx": 1.0, "ly": -1.0}, "buttons": ["r1"]},
+    {"t": 11.5, "axes": {}, "buttons": []},
+    {"t": 11.7, "axes": {}, "buttons": ["ps"]},
+    {"t": 11.9, "axes": {}, "buttons": []},
+    {"t": 12.0, "axes": {}, "buttons": ["triangle"]},
+    {"t": 12.2, "axes": {}, "buttons": ["r1"]},
+    {"t": 16.0, "axes": {}, "buttons": ["l1"]},
+    {"t": 16.2, "axes": {}, "buttons": []},
+    {"t": 16.5, "axes": {"rx": 1.0}, "buttons": ["r1"]},
+    {"t": 18.0, "axes": {}, "buttons": []}
+  ]
+}

@@ -1,11 +1,14 @@
-"""Contrôleur Agribot v9b : téléopération clavier et désherbage autonome.
+"""Contrôleur Agribot v9b : téléopération clavier ou manette (gamepad.py) et désherbage autonome.
 
 Géométrie alignée sur protos/Agribot.proto v9b (CAO AGRIBOT_v9b). Position 0 des
 servos = pose repos CAO, mêmes axes qu'en v7. Le réglage des gestes autonomes pour
 la pince v9b (tournée de 90°) reste à faire (étape 2 : validation des gestes)."""
 import math
+import os
 
 from controller import Keyboard, Supervisor
+
+from gamepad import GamepadControl, GamepadReader, ReplayJoystick
 
 # 4.8 rad/s * rayon 0.0825 m ≈ 0.4 m/s
 MAX_WHEEL = 4.8
@@ -558,6 +561,30 @@ def run_robot():
     keyboard = robot.getKeyboard()
     keyboard.enable(time_step)
 
+    # Manette (voir gamepad_config.py). AGRIBOT_GAMEPAD_REPLAY=scenario.json rejoue des entrées (tests).
+    replay_path = os.environ.get('AGRIBOT_GAMEPAD_REPLAY')
+    if replay_path:
+        joystick = ReplayJoystick(replay_path, robot.getTime)
+    else:
+        joystick = robot.getJoystick()
+        joystick.enable(time_step)
+    pad_debug = True if os.environ.get('AGRIBOT_GAMEPAD_DEBUG') == '1' else None
+    pad_limits = {}
+    for joint in joint_list:
+        if joint['min'] != 0.0 or joint['max'] != 0.0:
+            pad_limits[joint['name']] = (joint['min'], joint['max'])
+    pad = GamepadControl(pad_limits)
+    pad_reader = None
+    pad_checked = False
+    sensors = {}
+    if replay_path:
+        for joint in joint_list:
+            sensor = robot.getDevice(joint['name'] + '_sensor')
+            if sensor is not None:
+                sensor.enable(time_step)
+                sensors[joint['name']] = sensor
+    next_report = 0.0
+
     print(
         "Touches : haut/W avant, bas/S arrière, gauche/A gauche, droite/D droite, "
         "espace arrêt, Q/E S1 lacet, R/F S2 épaule, T/G S3 coude, Y/H S4 poignet, "
@@ -651,8 +678,32 @@ def run_robot():
 
     while robot.step(time_step) != -1:
         keys = pressed_keys(keyboard)
+        if not pad_checked:
+            pad_checked = True
+            if joystick.isConnected():
+                pad_reader = GamepadReader(joystick, debug=pad_debug)
+            print(GamepadReader(joystick, debug=pad_debug).describe() if pad_reader is None else pad_reader.describe(), flush=True)
+            if pad_reader is not None:
+                print("Manette : L1 roues/bras, R1 maintenu = homme mort, Rond = arrêt d'urgence "
+                      "(réarmer : PS ou Share), Triangle = pose repos (bras) / attente (roues).", flush=True)
+        pad_out = None
+        if pad_reader is not None:
+            pad_axes, pad_buttons, _raw_b, _raw_a = pad_reader.read()
+            pad_out = pad.step(dt, pad_axes, pad_buttons, {j['name']: j['target'] for j in joint_list})
+            for event in pad_out.events:
+                print("[manette] " + event, flush=True)
+            if pad_out.stop_auto and auto:
+                auto = False
+                print("Désherbage auto arrêté (manette).", flush=True)
+                if carried is not None:
+                    park(carried, robot_pose(robot))
+                    carried = None
+            if pad_out.estop_now:
+                left_speed = right_speed = 0.0
         p_down = (ord('P') in keys) or (ord('p') in keys)
-        if p_down and not p_was:
+        if p_down and not p_was and pad.estop and not auto:
+            print("Arrêt d'urgence actif : réarmer (PS ou Share) avant le mode auto.", flush=True)
+        elif p_down and not p_was:
             auto = not auto
             if auto:
                 state = 'stow'
@@ -680,7 +731,7 @@ def run_robot():
         forward = 0.0
         turn = 0.0
         if not auto:
-            stopped = (not keys) or (32 in keys)
+            stopped = (not keys) or (32 in keys) or (pad_out is not None and pad_out.block_drive)
             if not stopped:
                 if Keyboard.UP in keys or ord('W') in keys or ord('w') in keys:
                     forward += 1.0
@@ -692,7 +743,10 @@ def run_robot():
                     turn -= 1.0
             left_target = clamp(forward * MAX_WHEEL - turn * TURN, -MAX_WHEEL, MAX_WHEEL)
             right_target = clamp(forward * MAX_WHEEL + turn * TURN, -MAX_WHEEL, MAX_WHEEL)
-            if keys:
+            if pad_out is not None and pad_out.drive is not None:
+                left_target = pad_out.drive[0] * MAX_WHEEL
+                right_target = pad_out.drive[1] * MAX_WHEEL
+            if keys and not (pad_out is not None and pad_out.block_arm):
                 for joint in joint_list:
                     if joint['up'][0] in keys or joint['up'][1] in keys:
                         joint['target'] += joint_step
@@ -700,6 +754,11 @@ def run_robot():
                         joint['target'] -= joint_step
                     joint['target'] = clamp(joint['target'], joint['min'], joint['max'])
                     joint['goal'] = joint['target']
+            if pad_out is not None:
+                for name, value in pad_out.joint_targets.items():
+                    if name in joints:
+                        joints[name]['target'] = value
+                        joints[name]['goal'] = value
         else:
             track_carried(pose)
             translation, rotation = pose
@@ -839,6 +898,14 @@ def run_robot():
                 joint['target'] = approach(joint['target'], joint['goal'], joint_step)
 
         left_speed = approach(left_speed, left_target, max_step)
+        if replay_path and robot.getTime() >= next_report:
+            next_report += 0.5
+            measured = " ".join(f"{n}={sensors[n].getValue():+.3f}" for n in sensors)
+            wanted = " ".join(f"{j['name']}={j['target']:+.3f}" for j in joint_list)
+            pos = robot_pose(robot)[0]
+            print(f"MANETTE_ETAT t={robot.getTime():.2f} mode={pad.mode} au={int(pad.estop)} auto={int(auto)} "
+                  f"roues={left_target:+.2f},{right_target:+.2f} x={pos[0]:+.3f} y={pos[1]:+.3f} "
+                  f"cibles[{wanted}] mesures[{measured}]", flush=True)
         right_speed = approach(right_speed, right_target, max_step)
         for motor in left_motors:
             motor.setVelocity(left_speed)
